@@ -3,348 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>保険みっけ｜リスク可視化ツール</title>
+<title>保険みっけ｜お客様の困りごとから、伝わる説明をみつける</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@700&display=swap');
+  :root {
+    --navy:#223670;--navy-dark:#172550;--navy-light:#2d4a94;
+    --gold:#D0A900;--gold-light:#f0c800;--gold-pale:#fff8d6;
+    --red:#e05a5a;--orange:#e8892a;--green:#2eab6f;--blue:#2d7ad4;
+    --white:#ffffff;--gray-100:#f8f9fc;--gray-200:#eef0f6;
+    --gray-400:#9099b2;--gray-700:#3d4460;--text:#1a2040;
+    --radius:14px;--shadow:0 4px 24px rgba(34,54,112,0.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans JP',sans-serif;background:#f0f3fa;color:var(--text);min-height:100vh;}
+  html{scroll-behavior:smooth;}
 
-:root {
-  --navy: #223670;
-  --navy-dark: #172550;
-  --navy-light: #2d4a94;
-  --gold: #D0A900;
-  --gold-light: #f0c800;
-  --gold-pale: #fff8d6;
-  --red: #e05a5a;
-  --red-pale: #fff0f0;
-  --white: #ffffff;
-  --gray-100: #f8f9fc;
-  --gray-200: #eef0f6;
-  --gray-400: #9099b2;
-  --gray-700: #3d4460;
-  --text: #1a2040;
-  --radius: 14px;
-  --shadow: 0 4px 24px rgba(34,54,112,0.12);
-}
+  .header{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden;}
+  .header::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(208,169,0,0.15);border-radius:50%;}
+  .header::after{content:'';position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;background:rgba(208,169,0,0.1);border-radius:50%;}
+  .header-badge{display:inline-block;background:var(--gold);color:var(--navy-dark);font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 12px;border-radius:20px;margin-bottom:10px;}
+  .header h1{font-family:'Noto Serif JP',serif;font-size:28px;color:var(--white);margin-bottom:6px;position:relative;z-index:1;}
+  .header h1 span{color:var(--gold);}
+  .header p{font-size:12px;color:rgba(255,255,255,0.75);position:relative;z-index:1;}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+  .steps-bar{background:var(--white);padding:16px 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(34,54,112,0.08);position:sticky;top:0;z-index:100;}
+  .step-item{display:flex;align-items:center;gap:6px;}
+  .step-num{width:26px;height:26px;border-radius:50%;background:var(--gray-200);color:var(--gray-400);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+  .step-label{font-size:11px;color:var(--gray-400);font-weight:500;transition:all .3s;}
+  .step-line{width:24px;height:2px;background:var(--gray-200);margin:0 4px;transition:all .3s;}
+  .step-item.active .step-num{background:var(--navy);color:var(--white);}
+  .step-item.active .step-label{color:var(--navy);font-weight:700;}
+  .step-item.done .step-num{background:var(--gold);color:var(--navy-dark);}
+  .step-item.done .step-label{color:var(--gold);}
+  .step-line.done{background:var(--gold);}
 
-body {
-  font-family: 'Noto Sans JP', sans-serif;
-  background: #f0f3fa;
-  color: var(--text);
-  min-height: 100vh;
-}
+  .main{max-width:640px;margin:0 auto;padding:20px 16px 60px;}
+  .section{display:none;animation:fadeUp .4s ease;}
+  .section.active{display:block;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  .section-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:16px;padding-left:10px;border-left:3px solid var(--gold);}
 
-/* ヘッダー */
-.header {
-  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
-  padding: 28px 20px 24px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.header::before {
-  content: '';
-  position: absolute;
-  top: -40px; right: -40px;
-  width: 180px; height: 180px;
-  background: rgba(208,169,0,0.15);
-  border-radius: 50%;
-}
-.header-badge {
-  display: inline-block;
-  background: var(--gold);
-  color: var(--navy-dark);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  padding: 3px 12px;
-  border-radius: 20px;
-  margin-bottom: 10px;
-}
-.header h1 {
-  font-family: 'Noto Serif JP', serif;
-  font-size: 28px;
-  color: var(--white);
-  margin-bottom: 6px;
-  position: relative;
-  z-index: 1;
-}
-.header h1 span { color: var(--gold); }
-.header p {
-  font-size: 12px;
-  color: rgba(255,255,255,0.75);
-  position: relative;
-  z-index: 1;
-}
+  .attr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .attr-card{background:var(--white);border:2px solid var(--gray-200);border-radius:var(--radius);padding:20px 10px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);}
+  .attr-card:hover{border-color:var(--navy-light);transform:translateY(-2px);}
+  .attr-card.selected{border-color:var(--navy);background:var(--navy);}
+  .attr-icon{font-size:28px;margin-bottom:8px;display:block;}
+  .attr-label{font-size:12px;font-weight:700;color:var(--navy);line-height:1.4;}
+  .attr-card.selected .attr-label{color:var(--white);}
+  .attr-sub{font-size:10px;color:var(--gray-400);margin-top:4px;}
+  .attr-card.selected .attr-sub{color:rgba(255,255,255,0.7);}
 
-/* ステップバー */
-.steps-bar {
-  background: var(--white);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(34,54,112,0.08);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.step-item { display: flex; align-items: center; gap: 6px; }
-.step-num {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  background: var(--gray-200);
-  color: var(--gray-400);
-  font-size: 11px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.3s;
-}
-.step-label { font-size: 11px; color: var(--gray-400); font-weight: 500; transition: all 0.3s; }
-.step-line { width: 24px; height: 2px; background: var(--gray-200); margin: 0 4px; transition: all 0.3s; }
-.step-item.active .step-num { background: var(--navy); color: var(--white); }
-.step-item.active .step-label { color: var(--navy); font-weight: 700; }
-.step-item.done .step-num { background: var(--gold); color: var(--navy-dark); }
-.step-item.done .step-label { color: var(--gold); }
-.step-line.done { background: var(--gold); }
+  .concern-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .concern-card{background:var(--white);border:2px solid var(--gray-200);border-radius:10px;padding:14px 12px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;box-shadow:0 2px 8px rgba(34,54,112,.06);}
+  .concern-card:hover{border-color:var(--navy-light);}
+  .concern-card.selected{border-color:var(--gold);background:var(--gold-pale);}
+  .concern-check{width:18px;height:18px;border:2px solid var(--gray-200);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:11px;}
+  .concern-card.selected .concern-check{background:var(--gold);border-color:var(--gold);color:var(--navy-dark);}
+  .concern-icon{font-size:18px;flex-shrink:0;}
+  .concern-text{font-size:12px;font-weight:500;color:var(--gray-700);line-height:1.5;}
+  .concern-card.selected .concern-text{color:var(--navy);font-weight:700;}
 
-/* メイン */
-.main { max-width: 640px; margin: 0 auto; padding: 20px 16px 60px; }
+  .btn{display:block;width:100%;padding:16px;border:none;border-radius:var(--radius);font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;}
+  .btn-primary{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:var(--white);box-shadow:0 4px 16px rgba(34,54,112,.3);}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(34,54,112,.4);}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-gold{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 100%);color:var(--navy-dark);box-shadow:0 4px 16px rgba(208,169,0,.3);margin-top:12px;}
+  .btn-gold:hover{transform:translateY(-1px);}
+  .btn-back{background:var(--gray-200);color:var(--gray-700);margin-bottom:12px;font-size:13px;}
+  .btn-back:hover{background:var(--gray-400);color:var(--white);}
+  .hint{font-size:11px;color:var(--gray-400);text-align:center;margin-top:8px;}
 
-.section { display: none; animation: fadeUp 0.4s ease; }
-.section.active { display: block; }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  .result-header{background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--radius);padding:20px;margin-bottom:16px;color:var(--white);}
+  .result-header-label{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:.1em;margin-bottom:6px;}
+  .result-header-title{font-size:16px;font-weight:700;line-height:1.5;}
+  .result-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+  .result-tag{background:rgba(208,169,0,.25);color:var(--gold-light);font-size:10px;padding:4px 10px;border-radius:20px;font-weight:700;}
 
-.section-title {
-  font-size: 15px; font-weight: 700; color: var(--navy);
-  margin-bottom: 16px; padding-left: 10px;
-  border-left: 3px solid var(--gold);
-}
+  .viz-section{background:var(--white);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+  .viz-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .viz-sub{font-size:11px;color:var(--gray-400);margin-bottom:16px;}
+  .chart-wrap{display:flex;justify-content:center;}
 
-/* 属性カード */
-.attr-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.attr-card {
-  background: var(--white);
-  border: 2px solid var(--gray-200);
-  border-radius: var(--radius);
-  padding: 20px 10px; text-align: center;
-  cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);
-}
-.attr-card:hover { border-color: var(--navy-light); transform: translateY(-2px); }
-.attr-card.selected { border-color: var(--navy); background: var(--navy); }
-.attr-icon { font-size: 28px; margin-bottom: 8px; display: block; }
-.attr-label { font-size: 12px; font-weight: 700; color: var(--navy); line-height: 1.4; }
-.attr-card.selected .attr-label { color: var(--white); }
-.attr-sub { font-size: 10px; color: var(--gray-400); margin-top: 4px; }
-.attr-card.selected .attr-sub { color: rgba(255,255,255,0.7); }
+  .radar-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:16px;}
+  .radar-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gray-700);}
+  .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 
-/* 困りごと */
-.concern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.concern-card {
-  background: var(--white); border: 2px solid var(--gray-200);
-  border-radius: 10px; padding: 14px 12px; cursor: pointer;
-  transition: all 0.2s; display: flex; align-items: flex-start; gap: 10px;
-  box-shadow: 0 2px 8px rgba(34,54,112,0.06);
-}
-.concern-card:hover { border-color: var(--navy-light); }
-.concern-card.selected { border-color: var(--gold); background: var(--gold-pale); }
-.concern-check {
-  width: 18px; height: 18px; border: 2px solid var(--gray-200);
-  border-radius: 4px; flex-shrink: 0; margin-top: 1px;
-  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-  font-size: 11px;
-}
-.concern-card.selected .concern-check { background: var(--gold); border-color: var(--gold); color: var(--navy-dark); }
-.concern-icon { font-size: 18px; flex-shrink: 0; }
-.concern-text { font-size: 12px; font-weight: 500; color: var(--gray-700); line-height: 1.5; }
-.concern-card.selected .concern-text { color: var(--navy); font-weight: 700; }
+  .coverage-list{display:flex;flex-direction:column;gap:10px;}
+  .coverage-row{display:flex;align-items:center;gap:8px;}
+  .coverage-name{font-size:11px;color:var(--gray-700);width:90px;flex-shrink:0;line-height:1.3;}
+  .coverage-bar-bg{flex:1;height:14px;background:var(--gray-200);border-radius:7px;overflow:hidden;}
+  .coverage-bar-fill{height:100%;border-radius:7px;width:0%;transition:width 1s ease;}
+  .coverage-pct{font-size:11px;font-weight:700;width:34px;text-align:right;flex-shrink:0;}
+  .coverage-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;display:inline-block;margin-top:3px;margin-left:98px;}
 
-/* ボタン */
-.btn {
-  display: block; width: 100%; padding: 16px;
-  border: none; border-radius: var(--radius);
-  font-family: 'Noto Sans JP', sans-serif;
-  font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center;
-}
-.btn-primary {
-  background: linear-gradient(135deg, var(--navy), var(--navy-light));
-  color: var(--white); box-shadow: 0 4px 16px rgba(34,54,112,0.3);
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(34,54,112,0.4); }
-.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.btn-gold {
-  background: linear-gradient(135deg, var(--gold), var(--gold-light));
-  color: var(--navy-dark); box-shadow: 0 4px 16px rgba(208,169,0,0.3); margin-top: 12px;
-}
-.btn-gold:hover { transform: translateY(-1px); }
-.btn-back { background: var(--gray-200); color: var(--gray-700); margin-bottom: 14px; font-size: 13px; }
-.btn-back:hover { background: var(--gray-400); color: var(--white); }
+  .matrix-outer{position:relative;padding-left:22px;}
+  .matrix-ylabel{position:absolute;left:0;top:50%;transform:translateY(-50%) rotate(-90deg);font-size:10px;color:var(--gray-400);white-space:nowrap;}
+  .matrix-canvas-wrap{position:relative;width:100%;padding-bottom:82%;}
+  .matrix-canvas-wrap canvas{position:absolute;inset:0;width:100%;height:100%;}
+  .matrix-xlabels{display:flex;justify-content:space-between;font-size:10px;color:var(--gray-400);margin-top:4px;padding:0 24px;}
 
-/* ─── 結果エリア ─── */
+  .priority-list{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+  .priority-item{display:flex;align-items:center;gap:10px;background:var(--gray-100);border-radius:10px;padding:10px 12px;}
+  .priority-num{width:24px;height:24px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .priority-label{flex:1;font-size:12px;font-weight:700;color:var(--gray-700);line-height:1.4;}
+  .priority-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;}
+  .badge-S{background:#ffe0e0;color:#c0392b;}
+  .badge-A{background:#ffecd0;color:#b35a00;}
+  .badge-B{background:#fff8d6;color:#8a6f00;}
 
-/* サマリーヘッダー */
-.result-header {
-  background: linear-gradient(135deg, var(--navy-dark), var(--navy));
-  border-radius: var(--radius); padding: 20px; margin-bottom: 16px; color: var(--white);
-}
-.result-header-label { font-size: 10px; color: var(--gold); font-weight: 700; letter-spacing: 0.1em; margin-bottom: 6px; }
-.result-header-title { font-size: 16px; font-weight: 700; line-height: 1.5; }
-.result-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.result-tag {
-  background: rgba(208,169,0,0.25); color: var(--gold-light);
-  font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 700;
-}
+  .divider{border:none;border-top:2px dashed var(--gray-200);margin:20px 0;}
+  .detail-heading{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;padding-left:10px;border-left:3px solid var(--navy);}
 
-/* ─── レーダーチャート ─── */
-.chart-card {
-  background: var(--white); border-radius: var(--radius);
-  padding: 20px 16px; margin-bottom: 16px; box-shadow: var(--shadow);
-}
-.chart-title {
-  font-size: 13px; font-weight: 700; color: var(--navy);
-  margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
-}
-.chart-sub { font-size: 11px; color: var(--gray-400); margin-bottom: 16px; }
-.radar-wrap { display: flex; justify-content: center; position: relative; }
-canvas#radarChart { max-width: 100%; }
+  .result-block{background:var(--white);border-radius:var(--radius);padding:18px;margin-bottom:12px;box-shadow:var(--shadow);border-left:4px solid var(--navy);}
+  .result-block.gold{border-left-color:var(--gold);}
+  .result-block.warn{border-left-color:var(--red);}
+  .result-block-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+  .result-block.gold .result-block-title{color:#8a6f00;}
+  .result-block.warn .result-block-title{color:#c0392b;}
+  .result-item{font-size:13px;color:var(--gray-700);line-height:1.7;padding:6px 0;border-bottom:1px solid var(--gray-200);display:flex;align-items:flex-start;gap:8px;}
+  .result-item:last-child{border-bottom:none;padding-bottom:0;}
+  .result-item-dot{color:var(--navy);font-size:16px;line-height:1.5;flex-shrink:0;}
+  .result-block.gold .result-item-dot{color:var(--gold);}
+  .result-block.warn .result-item-dot{color:var(--red);}
 
-/* 凡例 */
-.radar-legend {
-  display: flex; gap: 16px; justify-content: center; margin-top: 12px; flex-wrap: wrap;
-}
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--gray-700); }
-.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .copy-area{background:var(--gray-100);border:1px dashed var(--gray-400);border-radius:10px;padding:16px;margin-top:16px;font-size:12px;color:var(--gray-700);white-space:pre-wrap;line-height:1.8;display:none;}
+  .copy-area.show{display:block;}
 
-/* リスクスコアバー */
-.risk-bars { margin-top: 14px; display: grid; gap: 8px; }
-.risk-bar-row { display: flex; align-items: center; gap: 10px; }
-.risk-bar-label { font-size: 11px; color: var(--gray-700); width: 90px; flex-shrink: 0; font-weight: 500; }
-.risk-bar-track { flex: 1; height: 10px; background: var(--gray-200); border-radius: 10px; overflow: hidden; }
-.risk-bar-fill {
-  height: 100%; border-radius: 10px; width: 0%;
-  transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
-}
-.risk-bar-pct { font-size: 11px; font-weight: 700; width: 36px; text-align: right; }
-
-/* ─── 優先度マトリクス ─── */
-.matrix-card {
-  background: var(--white); border-radius: var(--radius);
-  padding: 20px 16px; margin-bottom: 16px; box-shadow: var(--shadow);
-}
-.matrix-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-.matrix-sub { font-size: 11px; color: var(--gray-400); margin-bottom: 14px; }
-
-.matrix-wrap { position: relative; }
-.matrix-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr; gap: 6px;
-}
-.matrix-cell {
-  border-radius: 10px; padding: 12px; min-height: 90px;
-  display: flex; flex-direction: column; gap: 6px;
-  position: relative;
-}
-.cell-q1 { background: #fff0f0; border: 1.5px solid #f4a0a0; } /* 高×高 最優先 */
-.cell-q2 { background: #fff8e0; border: 1.5px solid #f0c800; } /* 低×高 重要 */
-.cell-q3 { background: #e8f4ff; border: 1.5px solid #a0c4f4; } /* 高×低 要注意 */
-.cell-q4 { background: var(--gray-100); border: 1.5px solid var(--gray-200); } /* 低×低 経過観察 */
-
-.cell-badge {
-  font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
-  display: inline-block; width: fit-content;
-}
-.badge-q1 { background: var(--red); color: white; }
-.badge-q2 { background: var(--gold); color: var(--navy-dark); }
-.badge-q3 { background: #3a8fd1; color: white; }
-.badge-q4 { background: var(--gray-400); color: white; }
-
-.matrix-items { display: flex; flex-direction: column; gap: 4px; }
-.matrix-item {
-  font-size: 10px; color: var(--gray-700); line-height: 1.4;
-  display: flex; align-items: flex-start; gap: 4px;
-}
-.matrix-item-dot { flex-shrink: 0; font-size: 12px; }
-
-/* 軸ラベル */
-.axis-y {
-  position: absolute; left: -14px; top: 50%; transform: translateY(-50%) rotate(-90deg);
-  font-size: 9px; color: var(--gray-400); white-space: nowrap; font-weight: 700;
-  letter-spacing: 0.05em;
-}
-.axis-x {
-  font-size: 9px; color: var(--gray-400); text-align: center;
-  margin-top: 6px; font-weight: 700; letter-spacing: 0.05em;
-}
-.matrix-outer { padding-left: 18px; }
-
-.matrix-col-labels { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
-.col-label { font-size: 9px; color: var(--gray-400); text-align: center; font-weight: 700; }
-
-/* 説明ブロック */
-.result-block {
-  background: var(--white); border-radius: var(--radius);
-  padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow);
-  border-left: 4px solid var(--navy);
-}
-.result-block.gold { border-left-color: var(--gold); }
-.result-block.warn { border-left-color: var(--red); }
-.result-block-title {
-  font-size: 12px; font-weight: 700; color: var(--navy);
-  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
-}
-.result-block.gold .result-block-title { color: #8a6f00; }
-.result-block.warn .result-block-title { color: #c0392b; }
-.result-item {
-  font-size: 13px; color: var(--gray-700); line-height: 1.7;
-  padding: 6px 0; border-bottom: 1px solid var(--gray-200);
-  display: flex; align-items: flex-start; gap: 8px;
-}
-.result-item:last-child { border-bottom: none; padding-bottom: 0; }
-.result-item-dot { color: var(--navy); font-size: 16px; line-height: 1.5; flex-shrink: 0; }
-.result-block.gold .result-item-dot { color: var(--gold); }
-.result-block.warn .result-item-dot { color: var(--red); }
-
-/* コピー */
-.copy-area {
-  background: var(--gray-100); border: 1px dashed var(--gray-400);
-  border-radius: 10px; padding: 16px; margin-top: 16px;
-  font-size: 12px; color: var(--gray-700); white-space: pre-wrap;
-  line-height: 1.8; display: none;
-}
-.copy-area.show { display: block; }
-.hint { font-size: 11px; color: var(--gray-400); text-align: center; margin-top: 8px; }
-
-/* アコーディオン */
-.accordion-header {
-  background: var(--gray-100); border-radius: 10px; padding: 14px 16px;
-  cursor: pointer; font-size: 13px; font-weight: 700; color: var(--navy);
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 4px; border: 1px solid var(--gray-200); transition: all 0.2s;
-}
-.accordion-header:hover { background: var(--gray-200); }
-.accordion-body { display: none; padding: 0 0 12px 0; }
-.accordion-body.open { display: block; }
-.accordion-arrow { transition: transform 0.3s; }
-.accordion-header.open .accordion-arrow { transform: rotate(180deg); }
-
-/* フッター */
-.footer { text-align: center; padding: 20px; font-size: 11px; color: var(--gray-400); }
-.footer span { color: var(--navy); font-weight: 700; }
-
-/* セクション区切り */
-.section-divider {
-  font-size: 12px; font-weight: 700; color: var(--gray-400);
-  text-align: center; margin: 20px 0 14px;
-  display: flex; align-items: center; gap: 10px;
-}
-.section-divider::before, .section-divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--gray-200);
-}
-
-html { scroll-behavior: smooth; }
+  .footer{text-align:center;padding:20px;font-size:11px;color:var(--gray-400);}
+  .footer span{color:var(--navy);font-weight:700;}
 </style>
 </head>
 <body>
@@ -352,7 +138,7 @@ html { scroll-behavior: smooth; }
 <div class="header">
   <div class="header-badge">士業・保険代理店向けツール</div>
   <h1>保険<span>みっけ</span></h1>
-  <p>お客様のリスクを「見える化」して、伝わる提案をみつける</p>
+  <p>お客様の困りごとから、伝わる説明をみつける</p>
 </div>
 
 <div class="steps-bar">
@@ -360,626 +146,393 @@ html { scroll-behavior: smooth; }
   <div class="step-line" id="line1"></div>
   <div class="step-item" id="step2Ind"><div class="step-num">2</div><div class="step-label">困りごと</div></div>
   <div class="step-line" id="line2"></div>
-  <div class="step-item" id="step3Ind"><div class="step-num">3</div><div class="step-label">リスク診断</div></div>
+  <div class="step-item" id="step3Ind"><div class="step-num">3</div><div class="step-label">リスク分析</div></div>
 </div>
 
 <div class="main">
 
-<!-- STEP1 -->
-<div class="section active" id="step1">
-  <div class="section-title">お客様の属性を選んでください</div>
-  <div class="attr-grid">
-    <div class="attr-card" onclick="selectAttr('corporate', this)">
-      <span class="attr-icon">🏢</span>
-      <div class="attr-label">法人</div>
-      <div class="attr-sub">中小企業・会社</div>
+  <!-- STEP1 -->
+  <div class="section active" id="step1">
+    <div class="section-title">お客様の属性を選んでください</div>
+    <div class="attr-grid">
+      <div class="attr-card" onclick="selectAttr('corporate',this)"><span class="attr-icon">🏢</span><div class="attr-label">法人</div><div class="attr-sub">中小企業・会社</div></div>
+      <div class="attr-card" onclick="selectAttr('personal',this)"><span class="attr-icon">👤</span><div class="attr-label">個人</div><div class="attr-sub">会社員・家族</div></div>
+      <div class="attr-card" onclick="selectAttr('sole',this)"><span class="attr-icon">💼</span><div class="attr-label">個人事業主</div><div class="attr-sub">フリーランス</div></div>
     </div>
-    <div class="attr-card" onclick="selectAttr('personal', this)">
-      <span class="attr-icon">👤</span>
-      <div class="attr-label">個人</div>
-      <div class="attr-sub">会社員・家族</div>
-    </div>
-    <div class="attr-card" onclick="selectAttr('sole', this)">
-      <span class="attr-icon">💼</span>
-      <div class="attr-label">個人事業主</div>
-      <div class="attr-sub">フリーランス</div>
-    </div>
-  </div>
-  <p class="hint" style="margin-top:14px;">タップして選んでください</p>
-</div>
-
-<!-- STEP2 -->
-<div class="section" id="step2">
-  <button class="btn btn-back" onclick="goStep(1)">← 属性を選び直す</button>
-  <div class="section-title">困りごとを選んでください（複数選択OK）</div>
-  <div class="concern-grid" id="concernGrid"></div>
-  <button class="btn btn-primary" id="btnToResult" onclick="showResult()" disabled>リスクを診断する →</button>
-  <p class="hint" style="margin-top:8px;">1つ以上選ぶと進めます</p>
-</div>
-
-<!-- STEP3 -->
-<div class="section" id="step3">
-  <button class="btn btn-back" onclick="goStep(2)">← 困りごとを選び直す</button>
-
-  <!-- サマリーヘッダー -->
-  <div class="result-header" id="resultHeader"></div>
-
-  <!-- レーダーチャート -->
-  <div class="chart-card">
-    <div class="chart-title">📡 リスクカバレッジマップ</div>
-    <div class="chart-sub">未対応のリスクが外側に広がるほど、備えが必要なエリアです</div>
-    <div class="radar-wrap">
-      <canvas id="radarChart" width="300" height="300"></canvas>
-    </div>
-    <div class="radar-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:rgba(224,90,90,0.7)"></div>現在のリスク露出</div>
-      <div class="legend-dot" style="background:rgba(34,54,112,0.2)"></div><span style="font-size:10px;color:var(--gray-700)">最大リスク範囲</span>
-    </div>
-    <div class="risk-bars" id="riskBars"></div>
+    <p class="hint" style="margin-top:12px;">タップして選んでください</p>
   </div>
 
-  <!-- 優先度マトリクス -->
-  <div class="matrix-card">
-    <div class="matrix-title">🎯 リスク優先度マトリクス</div>
-    <div class="matrix-sub">まず手当すべきリスクを「緊急度×影響度」で整理します</div>
-    <div class="matrix-outer">
-      <div class="matrix-col-labels">
-        <div class="col-label">↑ 影響度：大</div>
-        <div class="col-label">影響度：小 ↓</div>
+  <!-- STEP2 -->
+  <div class="section" id="step2">
+    <button class="btn btn-back" onclick="goStep(1)">← 属性を選び直す</button>
+    <div class="section-title">困りごとを選んでください（複数選択OK）</div>
+    <div class="concern-grid" id="concernGrid"></div>
+    <button class="btn btn-primary" id="btnToResult" onclick="showResult()" disabled>リスク分析レポートを見る →</button>
+    <p class="hint" style="margin-top:8px;">1つ以上選ぶと進めます</p>
+  </div>
+
+  <!-- STEP3 -->
+  <div class="section" id="step3">
+    <button class="btn btn-back" onclick="goStep(2)">← 困りごとを選び直す</button>
+    <div class="result-header" id="resultHeader"></div>
+
+    <!-- レーダーチャート -->
+    <div class="viz-section">
+      <div class="viz-title">🕸 リスクカバレッジマップ</div>
+      <div class="viz-sub">今回選ばれた課題が、6つのリスク領域のどこに集中しているかを表示します</div>
+      <div class="chart-wrap"><canvas id="radarCanvas" width="280" height="280"></canvas></div>
+      <div class="radar-legend" id="radarLegend"></div>
+    </div>
+
+    <!-- カバレッジバー -->
+    <div class="viz-section">
+      <div class="viz-title">📊 リスク領域カバレッジ</div>
+      <div class="viz-sub">赤が多いほど手当が急がれる領域です。お客様に見せながら説明できます</div>
+      <div class="coverage-list" id="coverageList"></div>
+    </div>
+
+    <!-- 優先度マトリクス -->
+    <div class="viz-section">
+      <div class="viz-title">🎯 優先対応マトリクス</div>
+      <div class="viz-sub">右上（影響大×発生可能性大）が最優先。まずここから手当を提案しましょう</div>
+      <div class="matrix-outer">
+        <div class="matrix-ylabel">影響の大きさ ↑</div>
+        <div class="matrix-canvas-wrap"><canvas id="matrixCanvas"></canvas></div>
+        <div class="matrix-xlabels"><span>← 発生可能性 低</span><span>発生可能性 高 →</span></div>
       </div>
-      <div style="position:relative;">
-        <div class="axis-y">緊急度 →</div>
-        <div class="matrix-grid" id="matrixGrid"></div>
-      </div>
-      <div class="axis-x">← 緊急度：高　　　　　緊急度：低 →</div>
+      <div class="priority-list" id="priorityList"></div>
     </div>
+
+    <hr class="divider">
+    <div class="detail-heading">📋 詳細説明サポート</div>
+    <div id="resultContent"></div>
+
+    <button class="btn btn-gold" onclick="toggleCopy()">📋 トークメモをコピー</button>
+    <div class="copy-area" id="copyArea"></div>
+    <button class="btn btn-primary" onclick="goStep(1)" style="margin-top:12px;">🔄 別のお客様で使う</button>
   </div>
-
-  <!-- 詳細サポートテキスト（アコーディオン） -->
-  <div class="section-divider">詳細サポートテキスト</div>
-  <div id="detailBlocks"></div>
-
-  <button class="btn btn-gold" onclick="toggleCopy()">📋 面談トークメモをコピー</button>
-  <div class="copy-area" id="copyArea"></div>
-  <button class="btn btn-primary" onclick="goStep(1)" style="margin-top:12px;">🔄 別のお客様で使う</button>
-</div>
-
 </div>
 
 <div class="footer">Powered by <span>Smile Plus Consulting</span>｜保険みっけ β版</div>
 
 <script>
-// ─── データ定義 ───
+const AXES = [
+  {key:'life',  label:'生命・人的\nリスク',    color:'#e05a5a'},
+  {key:'asset', label:'財産・設備\nリスク',    color:'#e8892a'},
+  {key:'claim', label:'賠償・法的\nリスク',    color:'#d0a900'},
+  {key:'biz',   label:'事業継続\nリスク',      color:'#2eab6f'},
+  {key:'future',label:'老後・将来\nリスク',    color:'#2d7ad4'},
+  {key:'cyber', label:'情報・サイバー\nリスク',color:'#8b5cf6'},
+];
 
 const concerns = {
-  corporate: [
-    { id:'c1', icon:'👑', text:'社長に万一のことがあったとき会社が続けられるか不安' },
-    { id:'c2', icon:'🦺', text:'従業員が仕事中にケガ・病気をした場合の補償が心配' },
-    { id:'c3', icon:'🎁', text:'退職金の準備ができていない' },
-    { id:'c4', icon:'⚠️', text:'取引先への損害賠償リスクが怖い' },
-    { id:'c5', icon:'🏭', text:'機械・設備が止まったときの損失補填がない' },
-    { id:'c6', icon:'🔒', text:'情報漏洩・サイバー攻撃への備えがない' },
-    { id:'c7', icon:'🚗', text:'社有車の事故対応が不安' },
-    { id:'c8', icon:'📦', text:'納品物・製品の品質トラブルが心配' },
+  corporate:[
+    {id:'c1',icon:'👑',text:'社長に万一のことがあったとき会社が続けられるか不安',   axes:{life:.9,biz:.8},urgency:.85,impact:1.0},
+    {id:'c2',icon:'🦺',text:'従業員が仕事中にケガ・病気をした場合の補償が心配',     axes:{life:.8,claim:.6},urgency:.8, impact:.85},
+    {id:'c3',icon:'🎁',text:'退職金の準備ができていない',                            axes:{future:.9,biz:.4},urgency:.5, impact:.75},
+    {id:'c4',icon:'⚠️',text:'取引先への損害賠償リスクが怖い',                         axes:{claim:.9,biz:.5},urgency:.75,impact:.9},
+    {id:'c5',icon:'🏭',text:'機械・設備が止まったときの損失補填がない',               axes:{asset:.9,biz:.7},urgency:.7, impact:.8},
+    {id:'c6',icon:'🔒',text:'情報漏洩・サイバー攻撃への備えがない',                   axes:{cyber:.9,claim:.5},urgency:.7,impact:.75},
+    {id:'c7',icon:'🚗',text:'社有車の事故対応が不安',                                axes:{claim:.7,life:.4},urgency:.65,impact:.65},
+    {id:'c8',icon:'📦',text:'納品物・製品の品質トラブルが心配',                       axes:{claim:.8,biz:.4},urgency:.6, impact:.7},
   ],
-  personal: [
-    { id:'p1', icon:'🏥', text:'病気・入院で収入が途絶えるのが怖い' },
-    { id:'p2', icon:'👪', text:'自分に万一のとき家族の生活が心配' },
-    { id:'p3', icon:'🌅', text:'老後のお金が足りるか不安' },
-    { id:'p4', icon:'🚗', text:'車・バイクの事故リスク' },
-    { id:'p5', icon:'🏠', text:'火災・地震・自然災害への備えがない' },
-    { id:'p6', icon:'🤝', text:'他人へのケガ・損害の賠償が怖い' },
-    { id:'p7', icon:'💉', text:'持病があって保険に入れるか心配' },
-    { id:'p8', icon:'🧒', text:'子どもの学費・教育費の準備ができていない' },
+  personal:[
+    {id:'p1',icon:'🏥',text:'病気・入院で収入が途絶えるのが怖い',                    axes:{life:.9,biz:.6},urgency:.85,impact:.9},
+    {id:'p2',icon:'👪',text:'自分に万一のとき家族の生活が心配',                      axes:{life:.9,future:.5},urgency:.8,impact:1.0},
+    {id:'p3',icon:'🌅',text:'老後のお金が足りるか不安',                              axes:{future:.9,biz:.3},urgency:.5, impact:.85},
+    {id:'p4',icon:'🚗',text:'車・バイクの事故リスク',                                axes:{claim:.7,life:.4},urgency:.7, impact:.7},
+    {id:'p5',icon:'🏠',text:'火災・地震・自然災害への備えがない',                     axes:{asset:.9,biz:.3},urgency:.6, impact:.85},
+    {id:'p6',icon:'🤝',text:'他人へのケガ・損害の賠償が怖い',                        axes:{claim:.9},urgency:.65,impact:.75},
+    {id:'p7',icon:'💉',text:'持病があって保険に入れるか心配',                         axes:{life:.8,future:.4},urgency:.75,impact:.8},
+    {id:'p8',icon:'🧒',text:'子どもの学費・教育費の準備',                             axes:{future:.8,biz:.2},urgency:.55,impact:.7},
   ],
-  sole: [
-    { id:'s1', icon:'🤕', text:'自分が働けなくなったら収入がゼロになる' },
-    { id:'s2', icon:'⚠️', text:'お客様・第三者への賠償事故が心配' },
-    { id:'s3', icon:'🌅', text:'退職金がなく老後資金が不安' },
-    { id:'s4', icon:'🏥', text:'入院・手術したときの生活費が心配' },
-    { id:'s5', icon:'🏠', text:'自宅兼事務所の火災・災害リスク' },
-    { id:'s6', icon:'💻', text:'情報漏洩・著作権トラブルへの備えがない' },
-    { id:'s7', icon:'👷', text:'外注スタッフや協力会社への補償が必要' },
-    { id:'s8', icon:'📋', text:'節税しながら保険を活用したい' },
+  sole:[
+    {id:'s1',icon:'🤕',text:'自分が働けなくなったら収入がゼロになる',                axes:{life:.9,biz:.9},urgency:.9, impact:1.0},
+    {id:'s2',icon:'⚠️',text:'お客様・第三者への賠償事故が心配',                       axes:{claim:.9,biz:.5},urgency:.75,impact:.85},
+    {id:'s3',icon:'🌅',text:'退職金がなく老後資金が不安',                            axes:{future:.9},urgency:.5, impact:.8},
+    {id:'s4',icon:'🏥',text:'入院・手術したときの生活費が心配',                       axes:{life:.8,biz:.6},urgency:.8, impact:.85},
+    {id:'s5',icon:'🏠',text:'自宅兼事務所の火災・災害リスク',                         axes:{asset:.9,biz:.4},urgency:.6, impact:.7},
+    {id:'s6',icon:'💻',text:'情報漏洩・著作権トラブルへの備えがない',                 axes:{cyber:.9,claim:.6},urgency:.65,impact:.7},
+    {id:'s7',icon:'👷',text:'外注スタッフや協力会社への補償が必要',                   axes:{claim:.7,life:.4},urgency:.6, impact:.65},
+    {id:'s8',icon:'📋',text:'節税しながら保険を活用したい',                           axes:{future:.6,biz:.4},urgency:.45,impact:.6},
   ]
 };
 
-// 6軸のリスクカテゴリ
-const AXES = [
-  { key:'life',   label:'人・命リスク' },
-  { key:'asset',  label:'財産・設備' },
-  { key:'liability', label:'賠償・法的' },
-  { key:'cashflow',  label:'収入・資金' },
-  { key:'future', label:'老後・将来' },
-  { key:'cyber',  label:'情報・その他' },
-];
-
-// 各懸念→軸スコアマッピング (0〜4)
-const AXIS_MAP = {
-  c1:{ life:4, asset:0, liability:0, cashflow:4, future:2, cyber:0 },
-  c2:{ life:4, asset:0, liability:3, cashflow:2, future:0, cyber:0 },
-  c3:{ life:0, asset:0, liability:0, cashflow:2, future:4, cyber:0 },
-  c4:{ life:0, asset:0, liability:4, cashflow:2, future:0, cyber:0 },
-  c5:{ life:0, asset:4, liability:0, cashflow:3, future:0, cyber:0 },
-  c6:{ life:0, asset:0, liability:3, cashflow:2, future:0, cyber:4 },
-  c7:{ life:2, asset:2, liability:3, cashflow:1, future:0, cyber:0 },
-  c8:{ life:0, asset:0, liability:4, cashflow:2, future:0, cyber:0 },
-  p1:{ life:4, asset:0, liability:0, cashflow:4, future:1, cyber:0 },
-  p2:{ life:4, asset:0, liability:0, cashflow:4, future:2, cyber:0 },
-  p3:{ life:0, asset:0, liability:0, cashflow:2, future:4, cyber:0 },
-  p4:{ life:2, asset:2, liability:3, cashflow:1, future:0, cyber:0 },
-  p5:{ life:0, asset:4, liability:0, cashflow:2, future:0, cyber:0 },
-  p6:{ life:0, asset:0, liability:4, cashflow:2, future:0, cyber:0 },
-  p7:{ life:4, asset:0, liability:0, cashflow:2, future:2, cyber:0 },
-  p8:{ life:0, asset:0, liability:0, cashflow:3, future:4, cyber:0 },
-  s1:{ life:4, asset:0, liability:0, cashflow:4, future:2, cyber:0 },
-  s2:{ life:0, asset:0, liability:4, cashflow:3, future:0, cyber:1 },
-  s3:{ life:0, asset:0, liability:0, cashflow:2, future:4, cyber:0 },
-  s4:{ life:4, asset:0, liability:0, cashflow:4, future:1, cyber:0 },
-  s5:{ life:0, asset:4, liability:1, cashflow:2, future:0, cyber:0 },
-  s6:{ life:0, asset:0, liability:3, cashflow:2, future:0, cyber:4 },
-  s7:{ life:2, asset:0, liability:3, cashflow:1, future:0, cyber:0 },
-  s8:{ life:0, asset:0, liability:0, cashflow:3, future:4, cyber:0 },
+const results={
+  c1:{label:'社長の万一リスク',talk:'「社長が突然いなくなったとき、会社はどうなりますか？」という問いかけから入ると響きます。',types:['キーマン保険（定期保険）','死亡退職金準備のための終身保険','事業継続のための逓増定期保険'],points:['保険金が会社に支払われる契約にすること','保険金額は「年商の〇ヶ月分」を目安に設定','節税効果と保障を切り分けて説明する'],ng:['「節税になります」だけで勧めると保険本来の目的がぼけます','死亡保障と解約返戻金を混同しないよう注意'],next:['借入金残高の確認','後継者の有無','連帯保証の状況']},
+  c2:{label:'従業員のケガ・病気補償',talk:'「労災が下りても、それだけでは足りないケースがあるのはご存知ですか？」という問いかけが効果的です。',types:['労災上乗せ保険（使用者賠償責任保険）','団体傷害保険','団体長期障害所得補償保険'],points:['労災保険だけでは慰謝料・休業損害の全額をカバーできない','業種によって事故リスクの高さが異なる','従業員の士気・採用にも影響する'],ng:['「労災があるから大丈夫」は危険な誤解','役員は労災の対象外になる場合がある'],next:['従業員数・雇用形態','現在の労災加入状況','過去の事故歴・ヒヤリハット']},
+  c3:{label:'退職金の準備',talk:'「退職金はいつから・いくら準備するかで、税務上の扱いが大きく変わります」と入ると関心を引けます。',types:['中小企業退職金共済（中退共）','養老保険（ハーフタックスプラン）','小規模企業共済（経営者本人）','逓増定期保険・長期平準定期保険'],points:['中退共は掛金が全額損金算入できる','養老保険は保険料の1/2が損金になるプランがある','経営者自身の退職金と従業員分は切り分けて設計'],ng:['解約返戻金を退職金として出す場合、税務処理を間違えると否認リスク','中退共は一度加入すると解約しにくい'],next:['創業年数・退職予定時期','現在の積立状況','役員報酬の水準']},
+  c4:{label:'損害賠償リスク',talk:'「御社の業種で、万一お客様に損害を与えた場合、いくらまで対応できますか？」という質問が刺さります。',types:['生産物賠償責任保険（PL保険）','施設・業務遂行責任保険','請負業者賠償責任保険'],points:['業種・業務内容によってリスクが大きく異なる','1件の賠償で会社が傾くケースは実際に多い','契約書の免責条項だけでは守りきれない'],ng:['補償限度額が低すぎると意味をなさない','業務外の事故は補償されない場合がある'],next:['主な取引先・業務内容','過去のクレーム・トラブル歴','契約書・免責条項の有無']},
+  c5:{label:'機械・設備リスク',talk:'「設備が1週間止まったら、売上への影響はいくらくらいになりますか？」と数字で聞くと具体的に考えてもらえます。',types:['機械保険','動産総合保険','企業費用・利益保険（BI保険）','休業補償保険'],points:['機械の故障だけでなく、操作ミス・電気的事故も補償対象になる商品がある','BI保険は売上減少・固定費をカバーする','設備の時価と再調達価額のどちらで設定するかを確認'],ng:['火災保険だけでは機械の内部故障をカバーできない','補償開始までの待機期間の確認を忘れずに'],next:['主要設備の種類・金額・年式','設備が止まったときの影響範囲','現在の損害保険契約内容']},
+  c6:{label:'サイバー・情報漏洩リスク',talk:'「個人情報を1件でも持っている会社は、サイバーリスクへの備えが必要な時代になっています」',types:['サイバー保険（サイバーリスク保険）','情報漏洩賠償責任保険'],points:['中小企業もランサムウェア被害が急増している','被害発覚後の対応費用・顧客への賠償まで補償する商品がある','補償範囲は保険会社によって大きく異なる'],ng:['「うちは関係ない」は禁物。取引先経由の被害も多い','セキュリティ対策と保険はセットで提案する'],next:['個人情報の管理状況','システムのクラウド利用状況','セキュリティ対策の現状']},
+  c7:{label:'社有車リスク',talk:'「社有車で事故が起きたとき、会社として補償できる体制はありますか？」と確認から入ると話しやすいです。',types:['業務用自動車保険（フリート契約・ノンフリート契約）','使用者賠償責任保険'],points:['台数が多い場合はフリート契約でまとめた方が有利','従業員のマイカー通勤も会社がリスクを負う場合がある','対人・対物の補償上限を十分に設定する'],ng:['個人名義の保険を社用に流用しているケースは危険'],next:['社有車の台数・種類','従業員のマイカー通勤の有無','現在の自動車保険の内容']},
+  c8:{label:'製品・納品トラブルリスク',talk:'「納品した商品でお客様がケガをしたり損害が出た場合、どこまで補償できますか？」',types:['生産物賠償責任保険（PL保険）','完成工事賠償責任保険','業務過誤賠償責任保険'],points:['製造・販売・施工など関わり方によって適切な保険が異なる','輸出品・越境ECの場合は海外対応の補償が必要'],ng:['「うちは下請けだから関係ない」は誤解。下請け業者も責任を問われる'],next:['主な製品・サービスの内容','過去のクレーム・返品状況','取引先からの保険加入要求の有無']},
+  p1:{label:'病気・入院リスク',talk:'「入院中も固定費は続きますが、収入はどのくらい準備できていますか？」',types:['医療保険（入院・手術給付）','就業不能保険（長期療養対応）','がん保険'],points:['入院日数の短期化が進んでいるため、通院補償も重要','就業不能保険は休業60日を超える長期療養に対応','健保の傷病手当金は最大1年6ヶ月が上限'],ng:['医療保険だけでは長期休業中の収入減をカバーできない'],next:['現在の貯蓄額・生活費の把握','職業・勤務形態','家族構成・扶養の有無']},
+  p2:{label:'死亡・遺族保障',talk:'「あなたがいなくなった後、ご家族の生活費は何年分必要ですか？」から必要保障額を一緒に考えます。',types:['定期保険（保障期間を限定）','収入保障保険（年金型）','終身保険（一生涯の保障）'],points:['子どもが独立するまでの期間を保障の中心に設計する','収入保障保険は保険料が割安で家族への継続収入になる','遺族年金との組み合わせを考慮した設計が重要'],ng:['保障額が大きすぎても保険料負担が家計を圧迫する'],next:['子どもの年齢・教育費の見込み','ローン残高・負債状況','配偶者の収入状況']},
+  p3:{label:'老後資産形成',talk:'「公的年金だけでは生活費の何割をカバーできるかご存知ですか？」という問いから危機感が伝わります。',types:['個人年金保険','変額保険（投資性あり）','iDeCo（個人型確定拠出年金）との組み合わせ'],points:['保険と投資の性格を切り分けて説明する','節税効果（生命保険料控除）も訴求ポイント','払い込み期間と受取開始時期の設計が重要'],ng:['利率や利回りの話だけに終始しない','途中解約した場合の元本割れリスクも説明が必要'],next:['現在の貯蓄・資産状況','iDeCo・NISAの活用状況','希望する老後の生活水準']},
+  p4:{label:'自動車リスク',talk:'「対人・対物の補償が無制限になっているかどうか、確認したことはありますか？」',types:['任意自動車保険（対人・対物・車両）','個人賠償責任保険（特約追加）'],points:['対人・対物は必ず無制限設定を推奨','弁護士費用特約は費用対効果が高い'],ng:['保険料の安さだけで選んで必要な補償を落とさない'],next:['現在の保険内容・等級','車の種類・使用頻度']},
+  p5:{label:'火災・災害リスク',talk:'「地震保険は火災保険とセットで加入するものですが、見直した記憶はありますか？」',types:['火災保険（建物・家財）','地震保険（火災保険のセット）'],points:['建物の再調達価額と保険金額のギャップを確認','地震保険は地震・津波・噴火による被害が対象'],ng:['保険金額が実際の建物価値と乖離しているケースが多い'],next:['持家か賃貸か・築年数','現在の火災保険の加入状況']},
+  p6:{label:'個人賠償リスク',talk:'「自転車事故で高額賠償を求められたケースが増えています。備えていますか？」',types:['個人賠償責任保険（単体または特約）','自転車保険'],points:['月額数百円程度で加入できる商品が多い','家族全員をカバーできるプランが多い'],ng:['既存保険の特約に入っていることを知らない人が多い'],next:['現在の保険の特約内容確認','自転車利用の有無']},
+  p7:{label:'持病・健康上の不安',talk:'「今の健康状態でも入れる保険は必ずあります。諦める前に一緒に探しましょう」',types:['引受基準緩和型医療保険','無選択型終身保険','がん保険（告知項目が少ないもの）'],points:['通常の保険に断られても引受緩和型という選択肢がある','保険料は割高になるため、他の手段との比較も必要'],ng:['告知義務違反は保険金が支払われないリスクがある'],next:['現在の病歴・通院状況','過去の入院・手術歴']},
+  p8:{label:'教育費・学費の準備',talk:'「お子さんが高校・大学に入るタイミングで、まとまったお金が必要になります。今から間に合う方法を一緒に考えましょう」',types:['学資保険（こども保険）','低解約返戻金型終身保険','NISAとの組み合わせ'],points:['学資保険は返戻率が高いものを選ぶことが重要','契約者（親）の死亡・高度障害で保険料が免除になる保障も確認'],ng:['返戻率だけで選ばず、保障内容も確認する'],next:['子どもの年齢・人数','毎月積み立てられる金額']},
+  s1:{label:'就業不能リスク',talk:'「会社員には傷病手当金がありますが、個人事業主にはありません。もし3ヶ月働けなくなったら、どうしますか？」',types:['所得補償保険','就業不能保険','小規模企業共済（廃業・引退時の備え）'],points:['個人事業主は社会保障が薄いため民間保険での補完が特に重要','免責期間（7日・60日など）によって保険料が変わる'],ng:['国民健康保険には傷病手当金がない（一部自治体除く）'],next:['月収・固定費の把握','現在の貯蓄・緊急予備資金']},
+  s2:{label:'業務上の賠償リスク',talk:'「お客様のPCを壊した、納品物にミスがあった、そのときに払える自信はありますか？」',types:['フリーランス賠償責任保険','業務過誤賠償責任保険','専門職業人賠償保険（E&O保険）'],points:['フリーランス向けパッケージ商品が増えている','補償内容：業務上の賠償・情報漏洩・著作権侵害など'],ng:['クライアントとの業務委託契約の免責条項だけに頼るのは危険'],next:['主な業務内容・クライアント規模','契約書の有無']},
+  s3:{label:'老後資金の準備',talk:'「個人事業主は厚生年金がなく、退職金もゼロです。自分で積み立てる仕組みを作りましょう」',types:['小規模企業共済（掛金全額所得控除）','iDeCo（個人型確定拠出年金）','個人年金保険'],points:['小規模企業共済は月1,000円〜70,000円で全額所得控除','iDeCoは運用益が非課税・受取時も控除あり'],ng:['途中解約は不利になる制度が多いため、無理のない掛金設定が重要'],next:['現在の年収・課税所得の把握','iDeCo・共済の加入状況']},
+  s4:{label:'入院・医療リスク',talk:'「仕事を休んだら収入がゼロになる立場だからこそ、医療保険の設計が会社員より重要です」',types:['医療保険（入院・手術給付）','就業不能保険','がん保険'],points:['入院給付金だけでなく、通院補償も重要','傷病手当金がない分、給付金額の設定を厚めにする'],ng:['会社員と同じ設計では不十分なケースが多い'],next:['家族構成・扶養家族の有無','現在の貯蓄・緊急予備資金']},
+  s5:{label:'自宅兼事務所リスク',talk:'「自宅と事務所を兼用している場合、一般の火災保険では仕事関係の損害が補償されないことがあります」',types:['住宅・事業用兼用の火災保険','地震保険','動産総合保険（機材・備品）'],points:['一般の住宅用火災保険では業務用機器の損害が対象外になる場合がある','PCや機材は動産保険で別途カバーする方法もある'],ng:['住宅用・事業用の区分を保険会社に正確に告知していないと支払い拒否のリスク'],next:['自宅の所有・賃貸の別','業務用機器・備品の種類と金額']},
+  s6:{label:'情報漏洩・著作権リスク',talk:'「フリーランスでも、クライアントの機密情報を扱う以上、情報漏洩リスクは避けられません」',types:['フリーランス向けサイバー保険','業務過誤・情報漏洩賠償保険'],points:['PCの盗難・紛失による情報漏洩も補償対象になる商品がある','著作権侵害・コンテンツ使用に関する賠償も対象になる場合がある'],ng:['業務委託契約の機密保持条項だけでは損害賠償に対応しきれない'],next:['取り扱う情報の種類・機密性','クライアントとの契約書内容']},
+  s7:{label:'外注・協力会社への補償',talk:'「外注スタッフさんが作業中にケガをした場合、労災が使えないことはご存知ですか？」',types:['特別加入（一人親方・中小事業主の労災）','請負業者賠償責任保険','傷害保険（個人）'],points:['外注・業務委託の方は通常の労災保険が適用されない','特別加入制度で労災保険に加入できる場合がある'],ng:['「請負だから関係ない」という認識は法的に通らないケースが増えている'],next:['外注・協力会社の人数・業務内容','現在の契約形態']},
+  s8:{label:'節税×保険の活用',talk:'「保険を節税ツールとして使う考え方がありますが、2019年以降のルール変更をご存知ですか？」',types:['小規模企業共済','iDeCo','個人年金保険（生命保険料控除）','経営セーフティ共済（倒産防止）'],points:['小規模企業共済・iDeCoは節税効果が高く老後資金にもなる','個人年金保険料控除（年間最大4万円の所得控除）も活用できる'],ng:['節税目的だけで保険に加入すると、保障のバランスが崩れる'],next:['現在の課税所得・税率の把握','既存の共済・iDeCoの加入状況']},
 };
 
-// 優先度マトリクス用 (urgency:緊急度, impact:影響度 各1〜4)
-const PRIORITY = {
-  c1:{ urgency:4, impact:4 },
-  c2:{ urgency:3, impact:4 },
-  c3:{ urgency:2, impact:3 },
-  c4:{ urgency:3, impact:4 },
-  c5:{ urgency:3, impact:3 },
-  c6:{ urgency:3, impact:3 },
-  c7:{ urgency:3, impact:3 },
-  c8:{ urgency:3, impact:4 },
-  p1:{ urgency:4, impact:4 },
-  p2:{ urgency:4, impact:4 },
-  p3:{ urgency:2, impact:4 },
-  p4:{ urgency:3, impact:3 },
-  p5:{ urgency:2, impact:4 },
-  p6:{ urgency:3, impact:3 },
-  p7:{ urgency:4, impact:3 },
-  p8:{ urgency:2, impact:3 },
-  s1:{ urgency:4, impact:4 },
-  s2:{ urgency:3, impact:4 },
-  s3:{ urgency:2, impact:4 },
-  s4:{ urgency:4, impact:4 },
-  s5:{ urgency:2, impact:3 },
-  s6:{ urgency:3, impact:3 },
-  s7:{ urgency:3, impact:3 },
-  s8:{ urgency:2, impact:3 },
-};
+let currentAttr=null, selectedConcerns=[];
 
-// 詳細サポートテキスト
-const results = {
-  c1:{ label:'社長の万一リスク', talk:'「社長が突然いなくなったとき、会社はどうなりますか？」という問いかけから入ると響きます。', types:['キーマン保険（定期保険）','死亡退職金準備のための終身保険','事業継続のための逓増定期保険'], points:['保険金が会社に支払われる契約にすること','保険金額は「年商の〇ヶ月分」を目安に設定','節税効果と保障を切り分けて説明する'], ng:['「節税になります」だけで勧めると保険の本来の目的がぼけます','死亡保障と解約返戻金を混同しないよう注意'], next:['借入金残高の確認','後継者の有無','連帯保証の状況'] },
-  c2:{ label:'従業員のケガ・病気補償', talk:'「労災が下りても、それだけでは足りないケースがあるのはご存知ですか？」という問いかけが効果的です。', types:['労災上乗せ保険（使用者賠償責任保険）','団体傷害保険','団体長期障害所得補償保険'], points:['労災保険だけでは慰謝料・休業損害の全額をカバーできない','業種によって事故リスクの高さが異なる','従業員の士気・採用にも影響する'], ng:['「労災があるから大丈夫」は危険な誤解','役員は労災の対象外になる場合がある'], next:['従業員数・雇用形態','現在の労災加入状況','過去の事故歴・ヒヤリハット'] },
-  c3:{ label:'退職金の準備', talk:'「退職金はいつから・いくら準備するかで、税務上の扱いが大きく変わります」と入ると関心を引けます。', types:['中小企業退職金共済（中退共）','養老保険（ハーフタックスプラン）','小規模企業共済（経営者本人）','逓増定期保険・長期平準定期保険'], points:['中退共は掛金が全額損金算入できる','養老保険は保険料の1/2が損金になるプランがある','経営者自身の退職金と従業員分は切り分けて設計'], ng:['解約返戻金を退職金として出す場合の税務処理ミスに注意','中退共は一度加入すると解約しにくい'], next:['創業年数・退職予定時期','現在の積立状況','役員報酬の水準'] },
-  c4:{ label:'損害賠償リスク', talk:'「御社の業種で、万一お客様に損害を与えた場合、いくらまで対応できますか？」という質問が刺さります。', types:['生産物賠償責任保険（PL保険）','施設・業務遂行責任保険','請負業者賠償責任保険'], points:['業種・業務内容によってリスクが大きく異なる','1件の賠償で会社が傾くケースは実際に多い','契約書の免責条項だけでは守りきれない'], ng:['補償限度額が低すぎると意味をなさない','業務外の事故は補償されない場合がある'], next:['主な取引先・業務内容','過去のクレーム・トラブル歴','契約書・免責条項の有無'] },
-  c5:{ label:'機械・設備リスク', talk:'「設備が1週間止まったら、売上への影響はいくらくらいになりますか？」と数字で聞くと具体的に考えてもらえます。', types:['機械保険','動産総合保険','企業費用・利益保険（BI保険）','休業補償保険'], points:['機械の故障だけでなく操作ミス・電気的事故も補償対象になる商品がある','BI保険は売上減少・固定費をカバーする','設備の時価と再調達価額のどちらで設定するかを確認'], ng:['火災保険だけでは機械の内部故障をカバーできない','補償開始までの待機期間（免責期間）の確認を忘れずに'], next:['主要設備の種類・金額・年式','設備が止まったときの影響範囲','現在の損害保険契約内容'] },
-  c6:{ label:'サイバー・情報漏洩リスク', talk:'「個人情報を1件でも持っている会社は、サイバーリスクへの備えが必要な時代になっています」という導入が自然です。', types:['サイバー保険','情報漏洩賠償責任保険'], points:['中小企業もランサムウェア被害が急増している','被害発覚後の対応費用・顧客への賠償まで補償する商品がある','補償範囲は保険会社によって大きく異なる'], ng:['「うちは関係ない」は禁物。取引先経由の被害も多い','セキュリティ対策と保険はセットで提案する'], next:['個人情報の管理状況','システムのクラウド利用状況','セキュリティ対策の現状'] },
-  c7:{ label:'社有車リスク', talk:'「社有車で事故が起きたとき、会社として補償できる体制はありますか？」と確認から入ると話しやすいです。', types:['業務用自動車保険（フリート/ノンフリート）','使用者賠償責任保険'], points:['台数が多い場合はフリート契約でまとめると有利','従業員のマイカー通勤も会社がリスクを負う場合がある','対人・対物の補償上限を十分に設定する'], ng:['個人名義の保険を社用に流用しているケースは危険','免許証の定期確認義務もセットで確認'], next:['社有車の台数・種類','従業員のマイカー通勤の有無','現在の自動車保険の内容'] },
-  c8:{ label:'製品・納品トラブルリスク', talk:'「納品した商品でお客様がケガをした場合、どこまで補償できますか？」という問いかけが効果的です。', types:['生産物賠償責任保険（PL保険）','完成工事賠償責任保険','業務過誤賠償責任保険'], points:['製造・販売・施工など関わり方によって適切な保険が異なる','1件の事故で多数の被害者が出るリスクにも対応できるか確認'], ng:['「うちは下請けだから関係ない」は誤解。下請け業者も責任を問われる'], next:['主な製品・サービスの内容','過去のクレーム・返品状況','取引先からの保険加入要求の有無'] },
-  p1:{ label:'病気・入院リスク', talk:'「入院中も固定費は続きますが、収入はどのくらい準備できていますか？」という問いが現実感を持たせます。', types:['医療保険（入院・手術給付）','就業不能保険','がん保険'], points:['入院日数の短期化が進んでいるため通院補償も重要','就業不能保険は休業60日を超える長期療養に対応','健保の傷病手当金は最大1年6ヶ月が上限'], ng:['医療保険だけでは長期休業中の収入減をカバーできない','特約の内容を細かく確認しないと重複や漏れが出る'], next:['現在の貯蓄額・生活費の把握','職業・勤務形態','家族構成・扶養の有無'] },
-  p2:{ label:'死亡・遺族保障', talk:'「あなたがいなくなった後、ご家族の生活費は何年分必要ですか？」という質問から必要保障額を一緒に考えます。', types:['定期保険','収入保障保険（年金型）','終身保険'], points:['子どもが独立するまでの期間を保障の中心に設計する','収入保障保険は保険料が割安で家族への継続収入になる','遺族年金との組み合わせを考慮した設計が重要'], ng:['保障額が大きすぎると保険料負担が家計を圧迫する','逆に少なすぎると遺族の生活設計が崩れる'], next:['子どもの年齢・教育費の見込み','ローン残高・負債状況','配偶者の収入状況'] },
-  p3:{ label:'老後資産形成', talk:'「公的年金だけでは生活費の何割をカバーできるかご存知ですか？」という問いから入ると危機感が伝わります。', types:['個人年金保険','変額保険（投資性あり）','iDeCo（個人型確定拠出年金）との組み合わせ'], points:['保険と投資の性格を切り分けて説明する','節税効果（生命保険料控除）も訴求ポイント','払い込み期間と受取開始時期の設計が重要'], ng:['利率や利回りの話だけに終始しない','途中解約した場合の元本割れリスクも説明が必要'], next:['現在の貯蓄・資産状況','iDeCo・NISAの活用状況','希望する老後の生活水準'] },
-  p4:{ label:'自動車リスク', talk:'「対人・対物の補償が無制限になっているか、確認したことはありますか？」という入り方が実用的です。', types:['任意自動車保険（対人・対物・車両）','個人賠償責任保険（特約追加）'], points:['対人・対物は必ず無制限設定を推奨','弁護士費用特約は費用対効果が高い','家族全員をカバーできるプランの確認'], ng:['保険料の安さだけで選んで必要な補償を落とさない','等級・ゴールド免許の割引適用を確認'], next:['現在の保険内容・等級','車の種類・使用頻度','家族の運転者の状況'] },
-  p5:{ label:'火災・災害リスク', talk:'「地震保険は火災保険とセットで加入するものですが、見直した記憶はありますか？」という問いが入りやすいです。', types:['火災保険（建物・家財）','地震保険（火災保険のセット）'], points:['建物の再調達価額と保険金額のギャップを確認','地震保険は地震・津波・噴火による被害が対象','水災・風災・落雷なども補償内容を確認'], ng:['保険金額が実際の建物価値と乖離しているケースが多い','地震保険の補償は再調達価額の最大50%まで'], next:['持家か賃貸か・築年数','現在の火災保険の加入状況','居住エリアの災害リスク（ハザードマップ）'] },
-  p6:{ label:'個人賠償リスク', talk:'「自転車事故で高額賠償を求められたケースが増えています。備えていますか？」という導入が響きます。', types:['個人賠償責任保険（単体または特約）','自転車保険'], points:['月額数百円程度で加入できる商品が多い','家族全員をカバーできるプランが多い','火災・自動車保険の特約として追加可能なことが多い'], ng:['既存保険の特約に入っていることを知らない人が多い'], next:['現在の保険の特約内容確認','自転車利用の有無','小・中学生の子どもの有無'] },
-  p7:{ label:'持病・健康上の不安', talk:'「今の健康状態でも入れる保険は必ずあります。諦める前に一緒に探しましょう」という声かけが安心感につながります。', types:['引受基準緩和型医療保険','無選択型終身保険','がん保険（告知項目が少ないもの）'], points:['通常の保険に断られても引受緩和型という選択肢がある','保険料は割高になるため他の手段との比較も必要','加入前の告知内容は正確に記入することが必須'], ng:['告知義務違反は保険金が支払われないリスクがある','過去の病歴で一律に「無理」と判断しない'], next:['現在の病歴・通院状況','過去の入院・手術歴','希望する保障内容'] },
-  p8:{ label:'教育費・学費の準備', talk:'「お子さんが高校・大学に入るタイミングで、まとまったお金が必要になります。今から間に合う方法を一緒に考えましょう」', types:['学資保険（こども保険）','低解約返戻金型終身保険','NISAとの組み合わせ'], points:['学資保険は返戻率が高いものを選ぶことが重要','契約者（親）の死亡・高度障害で以後の保険料が免除になる保障も確認'], ng:['返戻率だけで選ばず保障内容も確認する','途中解約すると元本を下回る場合がある'], next:['子どもの年齢・人数','毎月積み立てられる金額','現在の貯蓄・資産状況'] },
-  s1:{ label:'就業不能リスク（個人事業主）', talk:'「会社員には傷病手当金がありますが、個人事業主にはありません。もし3ヶ月働けなくなったら、どうしますか？」', types:['所得補償保険','就業不能保険','小規模企業共済（廃業・引退時の備え）'], points:['個人事業主は社会保障が薄いため民間保険での補完が特に重要','免責期間によって保険料が変わる','月々の固定費の洗い出しと照合'], ng:['国民健康保険には傷病手当金がない（一部自治体除く）','免責期間中の生活費の確保も併せて考える'], next:['月収・固定費の把握','現在の貯蓄・緊急予備資金','業種・職業のリスク水準'] },
-  s2:{ label:'業務上の賠償リスク', talk:'「お客様のPCを壊した、納品物にミスがあった、そのときに払える自信はありますか？」', types:['フリーランス賠償責任保険','業務過誤賠償責任保険','専門職業人賠償保険（E&O保険）'], points:['フリーランス向けパッケージ商品が増えている','補償内容：業務上の賠償・情報漏洩・著作権侵害など'], ng:['クライアントとの業務委託契約の免責条項だけに頼るのは危険'], next:['主な業務内容・クライアント規模','契約書の有無・免責事項の確認','過去のトラブル経験の有無'] },
-  s3:{ label:'老後資金の準備（個人事業主）', talk:'「個人事業主は厚生年金がなく、退職金もゼロです。自分で積み立てる仕組みを作りましょう」', types:['小規模企業共済（掛金全額所得控除）','iDeCo（個人型確定拠出年金）','個人年金保険'], points:['小規模企業共済は月1,000円〜70,000円で全額所得控除','iDeCoは運用益が非課税・受取時も控除あり'], ng:['途中解約は不利になる制度が多いため無理のない掛金設定が重要'], next:['現在の年収・課税所得の把握','iDeCo・共済の加入状況','希望する老後の生活水準'] },
-  s4:{ label:'入院・医療リスク（個人事業主）', talk:'「仕事を休んだら収入がゼロになる立場だからこそ、医療保険の設計が会社員より重要です」', types:['医療保険（入院・手術給付）','就業不能保険','がん保険'], points:['自由診療（抗がん剤・先進医療）への備えも視野に入れる','傷病手当金がない分、給付金額の設定を厚めにする'], ng:['会社員と同じ設計では不十分なケースが多い'], next:['家族構成・扶養家族の有無','現在の貯蓄・緊急予備資金','業種・健康状態'] },
-  s5:{ label:'自宅兼事務所リスク', talk:'「自宅と事務所を兼用している場合、一般の火災保険では仕事関係の損害が補償されないことがあります」', types:['住宅・事業用兼用の火災保険','動産総合保険（機材・備品）'], points:['一般の住宅用火災保険では業務用機器の損害が対象外になる場合がある','PCや機材は動産保険で別途カバーする方法もある'], ng:['住宅用・事業用の区分を保険会社に正確に告知しないと支払い拒否リスク'], next:['自宅の所有・賃貸の別','業務用機器・備品の種類と金額','現在の火災保険の加入状況'] },
-  s6:{ label:'情報漏洩・著作権リスク', talk:'「フリーランスでも、クライアントの機密情報を扱う以上、情報漏洩リスクは避けられません」', types:['フリーランス向けサイバー保険','業務過誤・情報漏洩賠償保険'], points:['PCの盗難・紛失による情報漏洩も補償対象になる商品がある','著作権侵害・コンテンツ使用に関する賠償も対象になる場合がある'], ng:['業務委託契約の機密保持条項だけでは損害賠償に対応しきれない'], next:['取り扱う情報の種類・機密性','クライアントとの契約書内容','セキュリティ対策の現状'] },
-  s7:{ label:'外注・協力会社への補償', talk:'「外注スタッフさんが作業中にケガをした場合、労災が使えないことはご存知ですか？」', types:['特別加入（一人親方・中小事業主の労災）','請負業者賠償責任保険','傷害保険（個人）'], points:['外注・業務委託の方は通常の労災保険が適用されない','特別加入制度で労災保険に加入できる場合がある'], ng:['「請負だから関係ない」という認識は法的に通らないケースが増えている'], next:['外注・協力会社の人数・業務内容','現在の契約形態（請負・委任など）','過去の事故・トラブル経験'] },
-  s8:{ label:'節税×保険の活用', talk:'「保険を節税ツールとして使う考え方がありますが、2019年以降のルール変更をご存知ですか？」', types:['小規模企業共済','iDeCo','個人年金保険（生命保険料控除）','経営セーフティ共済'], points:['小規模企業共済・iDeCoは節税効果が高く老後資金にもなる','個人年金保険料控除（年間最大4万円の所得控除）も活用できる'], ng:['節税目的だけで保険に加入すると保障のバランスが崩れる','税務ルールは改正が多いため常に最新情報の確認が必要'], next:['現在の課税所得・税率の把握','既存の共済・iDeCoの加入状況','事業の収支見通し'] },
-};
-
-const ATTR_NAMES = { corporate:'法人（中小企業）', personal:'個人', sole:'個人事業主' };
-
-// ─── 状態 ───
-let currentAttr = null;
-let selectedConcerns = [];
-
-// ─── STEP制御 ───
-function selectAttr(attr, el) {
-  document.querySelectorAll('.attr-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  currentAttr = attr;
-  setTimeout(() => goStep(2), 280);
+function selectAttr(attr,el){
+  document.querySelectorAll('.attr-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected'); currentAttr=attr;
+  setTimeout(()=>goStep(2),300);
 }
-
-function renderConcerns() {
-  const grid = document.getElementById('concernGrid');
-  grid.innerHTML = '';
-  selectedConcerns = [];
-  concerns[currentAttr].forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'concern-card';
-    div.onclick = () => toggleConcern(c.id, div);
-    div.innerHTML = `
-      <div class="concern-check" id="chk-${c.id}"></div>
-      <div class="concern-icon">${c.icon}</div>
-      <div class="concern-text">${c.text}</div>
-    `;
-    grid.appendChild(div);
+function renderConcerns(){
+  const grid=document.getElementById('concernGrid'); grid.innerHTML=''; selectedConcerns=[];
+  (concerns[currentAttr]||[]).forEach(c=>{
+    const d=document.createElement('div'); d.className='concern-card';
+    d.onclick=()=>toggleConcern(c.id,d);
+    d.innerHTML=`<div class="concern-check" id="chk-${c.id}"></div><div class="concern-icon">${c.icon}</div><div class="concern-text">${c.text}</div>`;
+    grid.appendChild(d);
   });
-  document.getElementById('btnToResult').disabled = true;
+  document.getElementById('btnToResult').disabled=true;
 }
-
-function toggleConcern(id, el) {
-  const idx = selectedConcerns.indexOf(id);
-  const chk = document.getElementById('chk-' + id);
-  if (idx === -1) {
-    selectedConcerns.push(id);
-    el.classList.add('selected');
-    chk.textContent = '✓';
-  } else {
-    selectedConcerns.splice(idx, 1);
-    el.classList.remove('selected');
-    chk.textContent = '';
-  }
-  document.getElementById('btnToResult').disabled = selectedConcerns.length === 0;
+function toggleConcern(id,el){
+  const idx=selectedConcerns.indexOf(id);
+  const chk=document.getElementById('chk-'+id);
+  if(idx===-1){selectedConcerns.push(id);el.classList.add('selected');chk.textContent='✓';}
+  else{selectedConcerns.splice(idx,1);el.classList.remove('selected');chk.textContent='';}
+  document.getElementById('btnToResult').disabled=selectedConcerns.length===0;
 }
-
-function goStep(n) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('step' + n).classList.add('active');
-  [1,2,3].forEach(i => {
-    const el = document.getElementById('step' + i + 'Ind');
+function goStep(n){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  [1,2,3].forEach(i=>{
+    const el=document.getElementById('step'+i+'Ind');
     el.classList.remove('active','done');
-    if (i < n) el.classList.add('done');
-    if (i === n) el.classList.add('active');
+    if(i<n)el.classList.add('done'); if(i===n)el.classList.add('active');
   });
-  [1,2].forEach(i => {
-    const line = document.getElementById('line' + i);
-    line.classList.remove('done');
-    if (i < n) line.classList.add('done');
+  [1,2].forEach(i=>{
+    const l=document.getElementById('line'+i); l.classList.remove('done');
+    if(i<n)l.classList.add('done');
   });
-  if (n === 2) renderConcerns();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if(n===2)renderConcerns();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ─── 結果表示 ───
-function showResult() {
+function showResult(){
   goStep(3);
+  const attrNames={corporate:'法人（中小企業）',personal:'個人',sole:'個人事業主'};
+  const selData=selectedConcerns.map(id=>concerns[currentAttr].find(c=>c.id===id)).filter(Boolean);
+  const tags=selData.map(c=>results[c.id]?.label||'').filter(Boolean);
 
-  // ヘッダー
-  const tags = selectedConcerns.map(id => results[id]?.label).filter(Boolean);
-  document.getElementById('resultHeader').innerHTML = `
-    <div class="result-header-label">リスク診断レポート</div>
-    <div class="result-header-title">【${ATTR_NAMES[currentAttr]}】のお客様<br>リスクカバレッジ分析</div>
-    <div class="result-tags">${tags.map(t=>`<span class="result-tag">${t}</span>`).join('')}</div>
-  `;
+  document.getElementById('resultHeader').innerHTML=`
+    <div class="result-header-label">リスク分析レポート</div>
+    <div class="result-header-title">【${attrNames[currentAttr]}】のお客様　${selectedConcerns.length}件のリスクを分析しました</div>
+    <div class="result-tags">${tags.map(t=>`<span class="result-tag">${t}</span>`).join('')}</div>`;
 
-  // スコア計算
-  const scores = {};
-  AXES.forEach(a => scores[a.key] = 0);
-  const MAX_PER_AXIS = 4;
-
-  selectedConcerns.forEach(id => {
-    const m = AXIS_MAP[id];
-    if (!m) return;
-    AXES.forEach(a => {
-      scores[a.key] = Math.min(4, scores[a.key] + (m[a.key] || 0));
+  // 軸スコア集計
+  const axisScores={};
+  AXES.forEach(a=>axisScores[a.key]=0);
+  selData.forEach(c=>{
+    Object.entries(c.axes).forEach(([k,v])=>{
+      if(axisScores[k]!==undefined) axisScores[k]=Math.min(1,axisScores[k]+v*0.65);
     });
   });
 
-  // レーダーチャート描画
-  drawRadar(scores);
-
-  // リスクバー
-  const barsEl = document.getElementById('riskBars');
-  barsEl.innerHTML = '';
-  AXES.forEach(a => {
-    const pct = Math.round((scores[a.key] / MAX_PER_AXIS) * 100);
-    const color = pct >= 75 ? '#e05a5a' : pct >= 50 ? '#D0A900' : pct >= 25 ? '#3a8fd1' : '#9099b2';
-    const row = document.createElement('div');
-    row.className = 'risk-bar-row';
-    row.innerHTML = `
-      <div class="risk-bar-label">${a.label}</div>
-      <div class="risk-bar-track"><div class="risk-bar-fill" id="bar-${a.key}" style="background:${color}"></div></div>
-      <div class="risk-bar-pct" style="color:${color}">${pct}%</div>
-    `;
-    barsEl.appendChild(row);
+  requestAnimationFrame(()=>{
+    drawRadar(axisScores);
+    drawCoverage(axisScores);
+    drawMatrix(selData);
   });
-  // アニメーション
-  setTimeout(() => {
-    AXES.forEach(a => {
-      const pct = Math.round((scores[a.key] / MAX_PER_AXIS) * 100);
-      const el = document.getElementById('bar-' + a.key);
-      if (el) el.style.width = pct + '%';
-    });
-  }, 300);
 
-  // 優先度マトリクス
-  buildMatrix();
-
-  // 詳細アコーディオン
-  buildDetails();
+  // 詳細サポート
+  const container=document.getElementById('resultContent'); container.innerHTML='';
+  selectedConcerns.forEach(id=>{
+    const r=results[id]; if(!r)return;
+    const make=(cls,title,items)=>{
+      const d=document.createElement('div'); d.className='result-block '+cls;
+      d.innerHTML=`<div class="result-block-title">${title}</div>${items.map(i=>`<div class="result-item"><span class="result-item-dot">›</span><span>${i}</span></div>`).join('')}`;
+      container.appendChild(d);
+    };
+    make('','💬 '+r.label+'｜トークのきっかけ',[r.talk]);
+    make('gold','📋 関連する保険の種類',r.types);
+    make('','✅ 提案時のチェックポイント',r.points);
+    make('warn','⚠️ 注意・NGポイント',r.ng);
+    make('gold','🗒 次回面談で確認すること',r.next);
+  });
 
   // コピーテキスト
-  buildCopyText();
+  let txt=`【保険みっけ リスク分析メモ】\n対象：${attrNames[currentAttr]}\n${'─'.repeat(28)}\n\n`;
+  selectedConcerns.forEach(id=>{
+    const r=results[id]; if(!r)return;
+    txt+=`■ ${r.label}\n▶ トーク例\n${r.talk}\n\n▶ 関連保険\n${r.types.map(t=>'・'+t).join('\n')}\n\n▶ チェックポイント\n${r.points.map(p=>'・'+p).join('\n')}\n\n▶ NGポイント\n${r.ng.map(n=>'・'+n).join('\n')}\n\n▶ 次回確認事項\n${r.next.map(n=>'・'+n).join('\n')}\n\n${'─'.repeat(28)}\n\n`;
+  });
+  txt+='Powered by 保険みっけ｜Smile Plus Consulting';
+  document.getElementById('copyArea').textContent=txt;
 }
 
 // ─── レーダーチャート ───
-function drawRadar(scores) {
-  const canvas = document.getElementById('radarChart');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const cx = W / 2, cy = H / 2;
-  const R = Math.min(W, H) * 0.36;
-  const n = AXES.length;
-  ctx.clearRect(0, 0, W, H);
-
-  const angle = (i) => (Math.PI * 2 * i / n) - Math.PI / 2;
+function drawRadar(scores){
+  const canvas=document.getElementById('radarCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,R=Math.min(W,H)*0.35,N=AXES.length;
+  ctx.clearRect(0,0,W,H);
+  const ang=i=>(Math.PI*2*i/N)-Math.PI/2;
+  const pt=(i,r)=>({x:cx+r*Math.cos(ang(i)),y:cy+r*Math.sin(ang(i))});
 
   // グリッド
-  for (let lv = 1; lv <= 4; lv++) {
+  [.25,.5,.75,1].forEach(ratio=>{
     ctx.beginPath();
-    for (let i = 0; i < n; i++) {
-      const r = R * (lv / 4);
-      const x = cx + r * Math.cos(angle(i));
-      const y = cy + r * Math.sin(angle(i));
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    }
+    for(let i=0;i<N;i++){const p=pt(i,R*ratio);i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);}
     ctx.closePath();
-    ctx.strokeStyle = lv === 4 ? 'rgba(34,54,112,0.2)' : 'rgba(34,54,112,0.1)';
-    ctx.lineWidth = lv === 4 ? 1.5 : 1;
-    ctx.stroke();
-    if (lv === 4) { ctx.fillStyle = 'rgba(34,54,112,0.04)'; ctx.fill(); }
+    ctx.strokeStyle=ratio===1?'rgba(34,54,112,.2)':'rgba(34,54,112,.1)';
+    ctx.lineWidth=ratio===1?1.5:1; ctx.stroke();
+  });
+  for(let i=0;i<N;i++){
+    const p=pt(i,R);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(p.x,p.y);
+    ctx.strokeStyle='rgba(34,54,112,.12)';ctx.lineWidth=1;ctx.stroke();
   }
 
-  // 軸線
-  for (let i = 0; i < n; i++) {
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + R * Math.cos(angle(i)), cy + R * Math.sin(angle(i)));
-    ctx.strokeStyle = 'rgba(34,54,112,0.15)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+  // データエリア
+  ctx.beginPath();
+  for(let i=0;i<N;i++){
+    const v=scores[AXES[i].key]||0;
+    const p=pt(i,R*Math.max(v,.04));
+    i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y);
+  }
+  ctx.closePath();
+  ctx.fillStyle='rgba(208,169,0,.22)';ctx.fill();
+  ctx.strokeStyle='#D0A900';ctx.lineWidth=2.5;ctx.stroke();
+
+  // ドット
+  for(let i=0;i<N;i++){
+    const v=scores[AXES[i].key]||0;
+    const p=pt(i,R*Math.max(v,.04));
+    ctx.beginPath();ctx.arc(p.x,p.y,v>.1?5:3,0,Math.PI*2);
+    ctx.fillStyle=v>.1?'#D0A900':'rgba(34,54,112,.2)';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
   }
 
   // ラベル
-  ctx.font = 'bold 10px "Noto Sans JP", sans-serif';
-  ctx.fillStyle = '#3d4460';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  for (let i = 0; i < n; i++) {
-    const r = R + 22;
-    const x = cx + r * Math.cos(angle(i));
-    const y = cy + r * Math.sin(angle(i));
-    ctx.fillText(AXES[i].label, x, y);
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let i=0;i<N;i++){
+    const p=pt(i,R+30);
+    const v=scores[AXES[i].key]||0;
+    ctx.fillStyle=v>.25?'#223670':'#9099b2';
+    ctx.font=`${v>.25?'bold ':''} 10px Noto Sans JP,sans-serif`;
+    AXES[i].label.split('\n').forEach((line,li,arr)=>{
+      ctx.fillText(line,p.x,p.y+(li-(arr.length-1)/2)*13);
+    });
   }
 
-  // データポリゴン（アニメーション）
-  const MAX = 4;
-  let progress = 0;
-  const targetScores = AXES.map(a => scores[a.key]);
+  // 凡例
+  const leg=document.getElementById('radarLegend');
+  leg.innerHTML=AXES.map(a=>{
+    const v=scores[a.key]||0,pct=Math.round(v*100);
+    const col=pct>=55?'#e05a5a':pct>=25?'#e8892a':'#9099b2';
+    const st=pct>=55?'🔴 要対応':pct>=25?'🟡 要確認':'⚪ 対象外';
+    return `<div class="radar-legend-item"><div class="legend-dot" style="background:${col}"></div><span>${a.label.replace('\n','')}</span><span style="margin-left:auto;color:${col};font-weight:700;">${st}</span></div>`;
+  }).join('');
+}
 
-  function draw(p) {
-    // クリア（グリッドとラベルは再描画）
-    ctx.clearRect(0,0,W,H);
-
-    // グリッド再描画
-    for (let lv = 1; lv <= 4; lv++) {
-      ctx.beginPath();
-      for (let i = 0; i < n; i++) {
-        const r2 = R * (lv / 4);
-        const x = cx + r2 * Math.cos(angle(i));
-        const y = cy + r2 * Math.sin(angle(i));
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = lv === 4 ? 'rgba(34,54,112,0.2)' : 'rgba(34,54,112,0.1)';
-      ctx.lineWidth = lv === 4 ? 1.5 : 1;
-      ctx.stroke();
-      if (lv === 4) { ctx.fillStyle = 'rgba(34,54,112,0.04)'; ctx.fill(); }
-    }
-    for (let i = 0; i < n; i++) {
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + R * Math.cos(angle(i)), cy + R * Math.sin(angle(i)));
-      ctx.strokeStyle = 'rgba(34,54,112,0.15)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    }
-    ctx.font = 'bold 10px "Noto Sans JP", sans-serif';
-    ctx.fillStyle = '#3d4460';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    for (let i = 0; i < n; i++) {
-      const r2 = R + 22;
-      const x = cx + r2 * Math.cos(angle(i));
-      const y = cy + r2 * Math.sin(angle(i));
-      ctx.fillText(AXES[i].label, x, y);
-    }
-
-    // データ
-    ctx.beginPath();
-    for (let i = 0; i < n; i++) {
-      const val = (targetScores[i] / MAX) * p;
-      const r2 = R * val;
-      const x = cx + r2 * Math.cos(angle(i));
-      const y = cy + r2 * Math.sin(angle(i));
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(224,90,90,0.25)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(224,90,90,0.85)';
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-
-    // 点
-    for (let i = 0; i < n; i++) {
-      const val = (targetScores[i] / MAX) * p;
-      const r2 = R * val;
-      const x = cx + r2 * Math.cos(angle(i));
-      const y = cy + r2 * Math.sin(angle(i));
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#e05a5a';
-      ctx.fill();
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-  }
-
-  function animate() {
-    progress += 0.05;
-    if (progress >= 1) { progress = 1; draw(1); return; }
-    draw(progress);
-    requestAnimationFrame(animate);
-  }
-  animate();
+// ─── カバレッジバー ───
+function drawCoverage(scores){
+  const list=document.getElementById('coverageList'); list.innerHTML='';
+  AXES.forEach(a=>{
+    const v=scores[a.key]||0,pct=Math.round(v*100);
+    const col=pct>=55?'#e05a5a':pct>=25?'#e8892a':'#9099b2';
+    const stText=pct>=55?'🔴 最優先':pct>=25?'🟡 要確認':'⚪ 対象外';
+    const stBg=pct>=55?'#ffe0e0':pct>=25?'#ffecd0':'#f0f3fa';
+    const d=document.createElement('div');
+    d.innerHTML=`
+      <div class="coverage-row">
+        <div class="coverage-name">${a.label.replace('\n','')}</div>
+        <div class="coverage-bar-bg"><div class="coverage-bar-fill" style="width:0%;background:${col}" data-pct="${pct}"></div></div>
+        <div class="coverage-pct" style="color:${col}">${pct}%</div>
+      </div>
+      <span class="coverage-status" style="background:${stBg};color:${col}">${stText}</span>`;
+    list.appendChild(d);
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.coverage-bar-fill').forEach(el=>el.style.width=el.dataset.pct+'%');
+  },150);
 }
 
 // ─── 優先度マトリクス ───
-function buildMatrix() {
-  // 4象限に振り分け
-  // Q1: 緊急高×影響大, Q2: 緊急低×影響大, Q3: 緊急高×影響小, Q4: 緊急低×影響小
-  const q1=[], q2=[], q3=[], q4=[];
+function drawMatrix(selData){
+  const wrap=document.querySelector('.matrix-canvas-wrap');
+  const canvas=document.getElementById('matrixCanvas');
+  const W=wrap.offsetWidth||280, H=W*0.82;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const pad=28, iW=W-pad*2, iH=H-pad*2;
 
-  selectedConcerns.forEach(id => {
-    const p = PRIORITY[id];
-    const r = results[id];
-    if (!p || !r) return;
-    const icon = concerns[currentAttr].find(c=>c.id===id)?.icon || '';
-    const item = { id, label: r.label, icon };
-    if (p.urgency >= 3 && p.impact >= 3) q1.push(item);
-    else if (p.urgency < 3 && p.impact >= 3) q2.push(item);
-    else if (p.urgency >= 3 && p.impact < 3) q3.push(item);
-    else q4.push(item);
+  // 象限塗り
+  [{x:pad,y:pad,w:iW/2,h:iH/2,bg:'rgba(232,137,42,0.1)'}, // 左上：影響大×可能性低
+   {x:pad+iW/2,y:pad,w:iW/2,h:iH/2,bg:'rgba(224,90,90,0.15)'}, // 右上：最優先
+   {x:pad,y:pad+iH/2,w:iW/2,h:iH/2,bg:'rgba(144,153,178,0.06)'}, // 左下
+   {x:pad+iW/2,y:pad+iH/2,w:iW/2,h:iH/2,bg:'rgba(46,171,111,0.08)'}, // 右下
+  ].forEach(q=>{ctx.fillStyle=q.bg;ctx.fillRect(q.x,q.y,q.w,q.h);});
+
+  // 仕切り線
+  ctx.setLineDash([4,4]); ctx.strokeStyle='rgba(34,54,112,.15)'; ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(pad+iW/2,pad);ctx.lineTo(pad+iW/2,pad+iH);
+  ctx.moveTo(pad,pad+iH/2);ctx.lineTo(pad+iW,pad+iH/2);
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // 象限ラベル
+  ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+  ctx.fillStyle='rgba(224,90,90,0.7)'; ctx.fillText('【最優先】',pad+iW*0.75,pad+13);
+  ctx.fillStyle='rgba(34,54,112,0.3)'; ctx.fillText('【次のステップ】',pad+iW*0.25,pad+13);
+
+  // プロット
+  const placed=[];
+  selData.forEach((c,idx)=>{
+    let fx=pad+c.urgency*iW, fy=pad+(1-c.impact)*iH;
+    // 重なり回避
+    placed.forEach(p=>{if(Math.hypot(fx-p.x,fy-p.y)<22){fx+=18;fy-=6;}});
+    placed.push({x:fx,y:fy});
+    const score=c.urgency+c.impact;
+    const col=score>=1.7?'#e05a5a':score>=1.3?'#e8892a':'#2d7ad4';
+    ctx.beginPath();ctx.arc(fx,fy,10,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    ctx.font='bold 10px sans-serif';ctx.fillStyle='#fff';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(idx+1,fx,fy);
   });
 
-  const renderItems = (arr) => {
-    if (arr.length === 0) return '<div style="font-size:10px;color:#9099b2;text-align:center;padding-top:10px;">該当なし</div>';
-    return '<div class="matrix-items">' + arr.map(it =>
-      `<div class="matrix-item"><span class="matrix-item-dot">${it.icon}</span><span>${it.label}</span></div>`
-    ).join('') + '</div>';
-  };
-
-  document.getElementById('matrixGrid').innerHTML = `
-    <div class="matrix-cell cell-q1">
-      <span class="cell-badge badge-q1">🔴 最優先</span>
-      ${renderItems(q1)}
-    </div>
-    <div class="matrix-cell cell-q2">
-      <span class="cell-badge badge-q2">🟡 重要</span>
-      ${renderItems(q2)}
-    </div>
-    <div class="matrix-cell cell-q3">
-      <span class="cell-badge badge-q3">🔵 要注意</span>
-      ${renderItems(q3)}
-    </div>
-    <div class="matrix-cell cell-q4">
-      <span class="cell-badge badge-q4">⚪ 経過観察</span>
-      ${renderItems(q4)}
-    </div>
-  `;
-}
-
-// ─── 詳細アコーディオン ───
-function buildDetails() {
-  const container = document.getElementById('detailBlocks');
-  container.innerHTML = '';
-
-  selectedConcerns.forEach((id, idx) => {
-    const r = results[id];
-    if (!r) return;
-
-    const wrapper = document.createElement('div');
-    wrapper.style.marginBottom = '6px';
-
-    const header = document.createElement('div');
-    header.className = 'accordion-header';
-    header.innerHTML = `
-      <span>${concerns[currentAttr].find(c=>c.id===id)?.icon || ''} ${r.label}</span>
-      <span class="accordion-arrow">▼</span>
-    `;
-    header.onclick = () => {
-      header.classList.toggle('open');
-      body.classList.toggle('open');
-    };
-
-    const body = document.createElement('div');
-    body.className = 'accordion-body';
-    if (idx === 0) { header.classList.add('open'); body.classList.add('open'); }
-
-    body.innerHTML = `
-      <div class="result-block" style="border-radius:0 0 10px 10px;margin-bottom:0;">
-        <div class="result-block-title">💬 トークのきっかけ</div>
-        <div class="result-item"><span class="result-item-dot">›</span><span>${r.talk}</span></div>
-      </div>
-      <div class="result-block gold" style="border-radius:0;margin-bottom:0;margin-top:2px;">
-        <div class="result-block-title">📋 関連する保険</div>
-        ${r.types.map(t=>`<div class="result-item"><span class="result-item-dot">›</span><span>${t}</span></div>`).join('')}
-      </div>
-      <div class="result-block" style="border-radius:0;margin-bottom:0;margin-top:2px;">
-        <div class="result-block-title">✅ チェックポイント</div>
-        ${r.points.map(p=>`<div class="result-item"><span class="result-item-dot">›</span><span>${p}</span></div>`).join('')}
-      </div>
-      <div class="result-block warn" style="border-radius:0;margin-bottom:0;margin-top:2px;">
-        <div class="result-block-title">⚠️ 注意・NGポイント</div>
-        ${r.ng.map(n=>`<div class="result-item"><span class="result-item-dot">›</span><span>${n}</span></div>`).join('')}
-      </div>
-      <div class="result-block gold" style="border-radius:0 0 10px 10px;margin-top:2px;">
-        <div class="result-block-title">🗒 次回面談で確認すること</div>
-        ${r.next.map(n=>`<div class="result-item"><span class="result-item-dot">›</span><span>${n}</span></div>`).join('')}
-      </div>
-    `;
-
-    wrapper.appendChild(header);
-    wrapper.appendChild(body);
-    container.appendChild(wrapper);
+  // 優先度リスト
+  const pl=document.getElementById('priorityList'); pl.innerHTML='';
+  const sorted=[...selData].sort((a,b)=>(b.urgency+b.impact)-(a.urgency+a.impact));
+  sorted.forEach(c=>{
+    const r=results[c.id]; if(!r)return;
+    const score=c.urgency+c.impact;
+    const pr=score>=1.7?'S':score>=1.3?'A':'B';
+    const col=score>=1.7?'#e05a5a':score>=1.3?'#e8892a':'#2d7ad4';
+    const origIdx=selData.indexOf(c)+1;
+    const d=document.createElement('div'); d.className='priority-item';
+    d.innerHTML=`<div class="priority-num" style="background:${col}">${origIdx}</div><div class="priority-label">${r.label}</div><span class="priority-badge badge-${pr}">優先度 ${pr}</span>`;
+    pl.appendChild(d);
   });
 }
 
-// ─── コピーテキスト ───
-function buildCopyText() {
-  let txt = `【保険みっけ リスク診断レポート】\n対象：${ATTR_NAMES[currentAttr]}\n${'─'.repeat(24)}\n\n`;
-
-  // 優先順位
-  txt += '■ リスク優先度\n';
-  const pMap = { q1:'【最優先】', q2:'【重要】', q3:'【要注意】', q4:'【経過観察】' };
-  selectedConcerns.forEach(id => {
-    const p = PRIORITY[id]; const r = results[id];
-    if (!p || !r) return;
-    let label = p.urgency >= 3 && p.impact >= 3 ? pMap.q1
-      : p.urgency < 3 && p.impact >= 3 ? pMap.q2
-      : p.urgency >= 3 ? pMap.q3 : pMap.q4;
-    txt += `${label} ${r.label}\n`;
-  });
-  txt += '\n' + '─'.repeat(24) + '\n\n';
-
-  selectedConcerns.forEach(id => {
-    const r = results[id]; if (!r) return;
-    txt += `■ ${r.label}\n`;
-    txt += `▶ トーク例\n${r.talk}\n\n`;
-    txt += `▶ 関連保険\n${r.types.map(t=>'・'+t).join('\n')}\n\n`;
-    txt += `▶ チェックポイント\n${r.points.map(p=>'・'+p).join('\n')}\n\n`;
-    txt += `▶ 注意・NGポイント\n${r.ng.map(n=>'・'+n).join('\n')}\n\n`;
-    txt += `▶ 次回確認事項\n${r.next.map(n=>'・'+n).join('\n')}\n\n`;
-    txt += '─'.repeat(24) + '\n\n';
-  });
-  txt += 'Powered by 保険みっけ｜Smile Plus Consulting';
-  document.getElementById('copyArea').textContent = txt;
-}
-
-function toggleCopy() {
-  const area = document.getElementById('copyArea');
+function toggleCopy(){
+  const area=document.getElementById('copyArea');
   area.classList.toggle('show');
-  if (area.classList.contains('show')) {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(area.textContent)
-        .then(() => alert('📋 面談トークメモをクリップボードにコピーしました！'));
+  if(area.classList.contains('show')){
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(area.textContent).then(()=>alert('📋 トークメモをコピーしました！'));
     }
-    area.scrollIntoView({ behavior:'smooth', block:'start' });
+    area.scrollIntoView({behavior:'smooth',block:'start'});
   }
 }
 </script>
