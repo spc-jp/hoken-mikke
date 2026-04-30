@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保険みっけ｜お客様の困りごとから、伝わる説明をみつける</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@700&display=swap');
+
+  :root {
+    --navy: #223670;
+    --navy-dark: #172550;
+    --navy-light: #2d4a94;
+    --gold: #D0A900;
+    --gold-light: #f0c800;
+    --gold-pale: #fff8d6;
+    --white: #ffffff;
+    --gray-100: #f8f9fc;
+    --gray-200: #eef0f6;
+    --gray-400: #9099b2;
+    --gray-700: #3d4460;
+    --text: #1a2040;
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(34,54,112,0.12);
+    --shadow-lg: 0 8px 40px rgba(34,54,112,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: #f0f3fa;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ヘッダー */
+  .header {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
+    padding: 28px 20px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: rgba(208,169,0,0.15);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 120px; height: 120px;
+    background: rgba(208,169,0,0.1);
+    border-radius: 50%;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy-dark);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 28px;
+    color: var(--white);
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 span {
+    color: var(--gold);
+  }
+  .header p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ステップインジケーター */
+  .steps-bar {
+    background: var(--white);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    box-shadow: 0 2px 8px rgba(34,54,112,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    color: var(--gray-400);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+  .step-label {
+    font-size: 11px;
+    color: var(--gray-400);
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+  .step-line {
+    width: 24px;
+    height: 2px;
+    background: var(--gray-200);
+    margin: 0 4px;
+    transition: all 0.3s;
+  }
+  .step-item.active .step-num {
+    background: var(--navy);
+    color: var(--white);
+  }
+  .step-item.active .step-label {
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .step-item.done .step-num {
+    background: var(--gold);
+    color: var(--navy-dark);
+  }
+  .step-item.done .step-label {
+    color: var(--gold);
+  }
+  .step-line.done {
+    background: var(--gold);
+  }
+
+  /* メインコンテンツ */
+  .main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* セクション */
+  .section {
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+  .section.active {
+    display: block;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 16px;
+    padding-left: 10px;
+    border-left: 3px solid var(--gold);
+  }
+
+  /* 属性カード */
+  .attr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .attr-card {
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .attr-card:hover {
+    border-color: var(--navy-light);
+    transform: translateY(-2px);
+  }
+  .attr-card.selected {
+    border-color: var(--navy);
+    background: var(--navy);
+  }
+  .attr-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .attr-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.4;
+  }
+  .attr-card.selected .attr-label {
+    color: var(--white);
+  }
+  .attr-sub {
+    font-size: 10px;
+    color: var(--gray-400);
+    margin-top: 4px;
+  }
+  .attr-card.selected .attr-sub {
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* 困りごとカード */
+  .concern-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .concern-card {
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(34,54,112,0.06);
+  }
+  .concern-card:hover {
+    border-color: var(--navy-light);
+  }
+  .concern-card.selected {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+  }
+  .concern-check {
+    width: 18px; height: 18px;
+    border: 2px solid var(--gray-200);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .concern-card.selected .concern-check {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy-dark);
+    font-size: 11px;
+  }
+  .concern-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .concern-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-700);
+    line-height: 1.5;
+  }
+  .concern-card.selected .concern-text {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  /* ボタン */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--white);
+    box-shadow: 0 4px 16px rgba(34,54,112,0.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(34,54,112,0.4);
+  }
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--navy-dark);
+    box-shadow: 0 4px 16px rgba(208,169,0,0.3);
+    margin-top: 12px;
+  }
+  .btn-gold:hover {
+    transform: translateY(-1px);
+  }
+  .btn-back {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+  .btn-back:hover {
+    background: var(--gray-400);
+    color: var(--white);
+  }
+
+  /* 結果エリア */
+  .result-header {
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    color: var(--white);
+  }
+  .result-header-label {
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .result-header-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .result-tag {
+    background: rgba(208,169,0,0.25);
+    color: var(--gold-light);
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  .result-block {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--navy);
+  }
+  .result-block.gold {
+    border-left-color: var(--gold);
+  }
+  .result-block.warn {
+    border-left-color: #e05a5a;
+  }
+  .result-block-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .result-block.gold .result-block-title {
+    color: #8a6f00;
+  }
+  .result-block.warn .result-block-title {
+    color: #c0392b;
+  }
+  .result-item {
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.7;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .result-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .result-item-dot {
+    color: var(--navy);
+    font-size: 16px;
+    line-height: 1.5;
+    flex-shrink: 0;
+  }
+  .result-block.gold .result-item-dot {
+    color: var(--gold);
+  }
+  .result-block.warn .result-item-dot {
+    color: #e05a5a;
+  }
+
+  .copy-area {
+    background: var(--gray-100);
+    border: 1px dashed var(--gray-400);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--gray-700);
+    white-space: pre-wrap;
+    line-height: 1.8;
+    display: none;
+  }
+  .copy-area.show {
+    display: block;
+  }
+
+  .hint {
+    font-size: 11px;
+    color: var(--gray-400);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* フッター */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--gray-400);
+  }
+  .footer span {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  /* スクロール */
+  html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">士業・保険代理店向けツール</div>
+  <h1>保険<span>みっけ</span></h1>
+  <p>お客様の困りごとから、伝わる説明をみつける</p>
+</div>
+
+<div class="steps-bar" id="stepsBar">
+  <div class="step-item active" id="step1Ind">
+    <div class="step-num">1</div>
+    <div class="step-label">属性</div>
+  </div>
+  <div class="step-line" id="line1"></div>
+  <div class="step-item" id="step2Ind">
+    <div class="step-num">2</div>
+    <div class="step-label">困りごと</div>
+  </div>
+  <div class="step-line" id="line2"></div>
+  <div class="step-item" id="step3Ind">
+    <div class="step-num">3</div>
+    <div class="step-label">説明サポート</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STEP1: 属性選択 -->
+  <div class="section active" id="step1">
+    <div class="section-title">お客様の属性を選んでください</div>
+    <div class="attr-grid">
+      <div class="attr-card" onclick="selectAttr('corporate', this)">
+        <span class="attr-icon">🏢</span>
+        <div class="attr-label">法人</div>
+        <div class="attr-sub">中小企業・会社</div>
+      </div>
+      <div class="attr-card" onclick="selectAttr('personal', this)">
+        <span class="attr-icon">👤</span>
+        <div class="attr-label">個人</div>
+        <div class="attr-sub">会社員・家族</div>
+      </div>
+      <div class="attr-card" onclick="selectAttr('sole', this)">
+        <span class="attr-icon">💼</span>
+        <div class="attr-label">個人事業主</div>
+        <div class="attr-sub">フリーランス</div>
+      </div>
+    </div>
+    <p class="hint" style="margin-top:12px;">タップして選んでください</p>
+  </div>
+
+  <!-- STEP2: 困りごと選択 -->
+  <div class="section" id="step2">
+    <button class="btn btn-back" onclick="goStep(1)">← 属性を選び直す</button>
+    <div class="section-title" id="concernTitle">困りごとを選んでください（複数選択OK）</div>
+    <div class="concern-grid" id="concernGrid"></div>
+    <button class="btn btn-primary" id="btnToResult" onclick="showResult()" disabled>説明サポート文を生成する →</button>
+    <p class="hint" style="margin-top:8px;">1つ以上選ぶと進めます</p>
+  </div>
+
+  <!-- STEP3: 結果 -->
+  <div class="section" id="step3">
+    <button class="btn btn-back" onclick="goStep(2)">← 困りごとを選び直す</button>
+    <div id="resultContent"></div>
+    <button class="btn btn-gold" onclick="toggleCopy()">📋 トークメモをコピー用テキストで表示</button>
+    <div class="copy-area" id="copyArea"></div>
+    <button class="btn btn-primary" onclick="goStep(1)" style="margin-top:12px;">🔄 別のお客様で使う</button>
+  </div>
+
+</div>
+
+<div class="footer">
+  Powered by <span>Smile Plus Consulting</span>｜保険みっけ β版
+</div>
+
+<script>
+// データ定義
+const concerns = {
+  corporate: [
+    { id: 'c1', icon: '👑', text: '社長に万一のことがあったとき会社が続けられるか不安' },
+    { id: 'c2', icon: '🦺', text: '従業員が仕事中にケガ・病気をした場合の補償が心配' },
+    { id: 'c3', icon: '🎁', text: '退職金の準備ができていない' },
+    { id: 'c4', icon: '⚠️', text: '取引先への損害賠償リスクが怖い' },
+    { id: 'c5', icon: '🏭', text: '機械・設備が止まったときの損失補填がない' },
+    { id: 'c6', icon: '🔒', text: '情報漏洩・サイバー攻撃への備えがない' },
+    { id: 'c7', icon: '🚗', text: '社有車の事故対応が不安' },
+    { id: 'c8', icon: '📦', text: '納品物・製品の品質トラブルが心配' },
+  ],
+  personal: [
+    { id: 'p1', icon: '🏥', text: '病気・入院で収入が途絶えるのが怖い' },
+    { id: 'p2', icon: '👪', text: '自分に万一のとき家族の生活が心配' },
+    { id: 'p3', icon: '🌅', text: '老後のお金が足りるか不安' },
+    { id: 'p4', icon: '🚗', text: '車・バイクの事故リスク' },
+    { id: 'p5', icon: '🏠', text: '火災・地震・自然災害への備えがない' },
+    { id: 'p6', icon: '🤝', text: '他人へのケガ・損害の賠償が怖い' },
+    { id: 'p7', icon: '💉', text: '持病があって保険に入れるか心配' },
+    { id: 'p8', icon: '🧒', text: '子どもの学費・教育費の準備' },
+  ],
+  sole: [
+    { id: 's1', icon: '🤕', text: '自分が働けなくなったら収入がゼロになる' },
+    { id: 's2', icon: '⚠️', text: 'お客様・第三者への賠償事故が心配' },
+    { id: 's3', icon: '🌅', text: '退職金がなく老後資金が不安' },
+    { id: 's4', icon: '🏥', text: '入院・手術したときの生活費が心配' },
+    { id: 's5', icon: '🏠', text: '自宅兼事務所の火災・災害リスク' },
+    { id: 's6', icon: '💻', text: '情報漏洩・著作権トラブルへの備えがない' },
+    { id: 's7', icon: '👷', text: '外注スタッフや協力会社への補償が必要' },
+    { id: 's8', icon: '📋', text: '節税しながら保険を活用したい' },
+  ]
+};
+
+// 結果データ
+const results = {
+  c1: {
+    label: '社長の万一リスク',
+    talk: '「社長が突然いなくなったとき、会社はどうなりますか？」という問いかけから入ると響きます。',
+    types: ['キーマン保険（定期保険）', '死亡退職金準備のための終身保険', '事業継続のための逓増定期保険'],
+    points: ['保険金が会社に支払われる契約にすること', '保険金額は「年商の〇ヶ月分」を目安に設定', '節税効果と保障を切り分けて説明する'],
+    ng: ['「節税になります」だけで勧めると、保険の本来の目的がぼけます', '死亡保障と解約返戻金を混同しないよう注意'],
+    next: ['借入金残高の確認', '後継者の有無', '連帯保証の状況']
+  },
+  c2: {
+    label: '従業員のケガ・病気補償',
+    talk: '「労災が下りても、それだけでは足りないケースがあるのはご存知ですか？」という問いかけが効果的です。',
+    types: ['労災上乗せ保険（使用者賠償責任保険）', '団体傷害保険', '団体長期障害所得補償保険'],
+    points: ['労災保険だけでは慰謝料・休業損害の全額をカバーできない', '業種によって事故リスクの高さが異なる', '従業員の士気・採用にも影響する'],
+    ng: ['「労災があるから大丈夫」は危険な誤解', '役員は労災の対象外になる場合がある'],
+    next: ['従業員数・雇用形態', '現在の労災加入状況', '過去の事故歴・ヒヤリハット']
+  },
+  c3: {
+    label: '退職金の準備',
+    talk: '「退職金はいつから・いくら準備するかで、税務上の扱いが大きく変わります」と入ると関心を引けます。',
+    types: ['中小企業退職金共済（中退共）', '養老保険（ハーフタックスプラン）', '小規模企業共済（経営者本人）', '逓増定期保険・長期平準定期保険'],
+    points: ['中退共は掛金が全額損金算入できる', '養老保険は保険料の1/2が損金になるプランがある', '経営者自身の退職金と従業員分は切り分けて設計'],
+    ng: ['解約返戻金を退職金として出す場合、税務処理を間違えると否認リスク', '中退共は一度加入すると解約しにくい'],
+    next: ['創業年数・退職予定時期', '現在の積立状況', '役員報酬の水準']
+  },
+  c4: {
+    label: '損害賠償リスク',
+    talk: '「御社の業種で、万一お客様に損害を与えた場合、いくらまで対応できますか？」という質問が刺さります。',
+    types: ['生産物賠償責任保険（PL保険）', '施設・業務遂行責任保険', '請負業者賠償責任保険', '専門業種特有の賠償保険'],
+    points: ['業種・業務内容によってリスクが大きく異なる', '1件の賠償で会社が傾くケースは実際に多い', '契約書の免責条項だけでは守りきれない'],
+    ng: ['補償限度額が低すぎると意味をなさない', '業務外の事故は補償されない場合がある'],
+    next: ['主な取引先・業務内容', '過去のクレーム・トラブル歴', '契約書・免責条項の有無']
+  },
+  c5: {
+    label: '機械・設備リスク',
+    talk: '「設備が1週間止まったら、売上への影響はいくらくらいになりますか？」と数字で聞くと具体的に考えてもらえます。',
+    types: ['機械保険', '動産総合保険', '企業費用・利益保険（BI保険）', '休業補償保険'],
+    points: ['機械の故障だけでなく、操作ミス・電気的事故も補償対象になる商品がある', 'BI保険は売上減少・固定費をカバーする', '設備の時価と再調達価額のどちらで設定するかを確認'],
+    ng: ['火災保険だけでは機械の内部故障をカバーできない', '補償開始までの待機期間（免責期間）の確認を忘れずに'],
+    next: ['主要設備の種類・金額・年式', '設備が止まったときの影響範囲', '現在の損害保険契約内容']
+  },
+  c6: {
+    label: 'サイバー・情報漏洩リスク',
+    talk: '「個人情報を1件でも持っている会社は、サイバーリスクへの備えが必要な時代になっています」という導入が自然です。',
+    types: ['サイバー保険（サイバーリスク保険）', '情報漏洩賠償責任保険'],
+    points: ['中小企業もランサムウェア被害が急増している', '被害発覚後の対応費用・顧客への賠償まで補償する商品がある', '補償範囲は保険会社によって大きく異なる'],
+    ng: ['「うちは関係ない」は禁物。取引先経由の被害も多い', 'セキュリティ対策と保険はセットで提案する'],
+    next: ['個人情報の管理状況', 'システムのクラウド利用状況', 'セキュリティ対策の現状']
+  },
+  c7: {
+    label: '社有車リスク',
+    talk: '「社有車で事故が起きたとき、会社として補償できる体制はありますか？」と確認から入ると話しやすいです。',
+    types: ['業務用自動車保険（フリート契約・ノンフリート契約）', '社用車向け任意保険', '使用者賠償責任保険'],
+    points: ['台数が多い場合はフリート契約でまとめた方が有利', '従業員のマイカー通勤も会社がリスクを負う場合がある', '対人・対物の補償上限を十分に設定する'],
+    ng: ['個人名義の保険を社用に流用しているケースは危険', '免許証の定期確認義務もセットで確認'],
+    next: ['社有車の台数・種類', '従業員のマイカー通勤の有無', '現在の自動車保険の内容']
+  },
+  c8: {
+    label: '製品・納品トラブルリスク',
+    talk: '「納品した商品でお客様がケガをしたり損害が出た場合、どこまで補償できますか？」という問いかけが効果的です。',
+    types: ['生産物賠償責任保険（PL保険）', '完成工事賠償責任保険', '業務過誤賠償責任保険'],
+    points: ['製造・販売・施工など関わり方によって適切な保険が異なる', '輸出品・越境ECの場合は海外対応の補償が必要', '1件の事故で多数の被害者が出るリスクにも対応できるか確認'],
+    ng: ['「うちは下請けだから関係ない」は誤解。元請けだけでなく下請け業者も責任を問われる'],
+    next: ['主な製品・サービスの内容', '過去のクレーム・返品状況', '取引先からの保険加入要求の有無']
+  },
+  p1: {
+    label: '病気・入院リスク',
+    talk: '「入院中も固定費は続きますが、収入はどのくらい準備できていますか？」という問いが現実感を持たせます。',
+    types: ['医療保険（入院・手術給付）', '就業不能保険（長期療養対応）', 'がん保険'],
+    points: ['入院日数の短期化が進んでいるため、通院補償も重要になっている', '就業不能保険は休業60日を超えるような長期療養に対応', '健保の傷病手当金は最大1年6ヶ月が上限'],
+    ng: ['医療保険だけでは長期休業中の収入減をカバーできない', '特約の内容を細かく確認しないと重複や漏れが出る'],
+    next: ['現在の貯蓄額・生活費の把握', '職業・勤務形態', '家族構成・扶養の有無']
+  },
+  p2: {
+    label: '死亡・遺族保障',
+    talk: '「あなたがいなくなった後、ご家族の生活費は何年分必要ですか？」という質問から必要保障額を一緒に考えます。',
+    types: ['定期保険（保障期間を限定）', '収入保障保険（年金型）', '終身保険（一生涯の保障）'],
+    points: ['子どもが独立するまでの期間を保障の中心に設計する', '収入保障保険は保険料が割安で家族への継続収入になる', '遺族年金との組み合わせを考慮した設計が重要'],
+    ng: ['保障額が大きすぎても保険料負担が家計を圧迫する', '逆に少なすぎると遺族の生活設計が崩れる'],
+    next: ['子どもの年齢・教育費の見込み', 'ローン残高・負債状況', '配偶者の収入状況']
+  },
+  p3: {
+    label: '老後資産形成',
+    talk: '「公的年金だけでは生活費の何割をカバーできるかご存知ですか？」という問いから入ると危機感が伝わります。',
+    types: ['個人年金保険', '変額保険（投資性あり）', 'iDeCo（個人型確定拠出年金）との組み合わせ'],
+    points: ['保険と投資の性格を切り分けて説明する', '節税効果（生命保険料控除）も訴求ポイント', '払い込み期間と受取開始時期の設計が重要'],
+    ng: ['利率や利回りの話だけに終始しない', '途中解約した場合の元本割れリスクも説明が必要'],
+    next: ['現在の貯蓄・資産状況', 'iDeCo・NISAの活用状況', '希望する老後の生活水準']
+  },
+  p4: {
+    label: '自動車リスク',
+    talk: '「対人・対物の補償が「無制限」になっているかどうか、確認したことはありますか？」という入り方が実用的です。',
+    types: ['任意自動車保険（対人・対物・車両）', '個人賠償責任保険（特約追加）'],
+    points: ['対人・対物は必ず無制限設定を推奨', '弁護士費用特約は費用対効果が高い', '家族全員をカバーできるプランの確認'],
+    ng: ['保険料の安さだけで選んで必要な補償を落とさない', '等級・ゴールド免許の割引適用を確認'],
+    next: ['現在の保険内容・等級', '車の種類・使用頻度', '家族の運転者の状況']
+  },
+  p5: {
+    label: '火災・災害リスク',
+    talk: '「地震保険は火災保険とセットで加入するものですが、見直した記憶はありますか？」という問いが入りやすいです。',
+    types: ['火災保険（建物・家財）', '地震保険（火災保険のセット）'],
+    points: ['建物の再調達価額と保険金額のギャップを確認', '地震保険は地震・津波・噴火による被害が対象', '火災保険の補償内容は水災・風災・落雷なども確認'],
+    ng: ['保険金額が実際の建物価値と乖離しているケースが多い', '地震保険の補償は再調達価額の最大50%まで'],
+    next: ['持家か賃貸か・築年数', '現在の火災保険の加入状況', '居住エリアの災害リスク（ハザードマップ）']
+  },
+  p6: {
+    label: '個人賠償リスク',
+    talk: '「自転車事故で高額賠償を求められたケースが増えています。備えていますか？」という導入が響きます。',
+    types: ['個人賠償責任保険（単体または特約）', '自転車保険'],
+    points: ['月額数百円程度で加入できる商品が多い', '家族全員をカバーできるプランが多い', '火災保険・自動車保険の特約として追加可能なことが多い'],
+    ng: ['既存保険の特約に入っていることを知らない人が多い'],
+    next: ['現在の保険の特約内容確認', '自転車利用の有無', '小・中学生の子どもの有無']
+  },
+  p7: {
+    label: '持病・健康上の不安',
+    talk: '「今の健康状態でも入れる保険は必ずあります。諦める前に一緒に探しましょう」という声かけが安心感につながります。',
+    types: ['引受基準緩和型医療保険（持病があっても入りやすい）', '無選択型終身保険', 'がん保険（告知項目が少ないもの）'],
+    points: ['通常の保険に断られても引受緩和型という選択肢がある', '保険料は割高になるため、他の手段との比較も必要', '加入前の告知内容は正確に記入することが必須'],
+    ng: ['告知義務違反は保険金が支払われないリスクがある', '過去の病歴で一律に「無理」と判断しない'],
+    next: ['現在の病歴・通院状況', '過去の入院・手術歴', '希望する保障内容']
+  },
+  p8: {
+    label: '教育費・学費の準備',
+    talk: '「お子さんが高校・大学に入るタイミングで、まとまったお金が必要になります。今から間に合う方法を一緒に考えましょう」',
+    types: ['学資保険（こども保険）', '低解約返戻金型終身保険', 'NISAとの組み合わせ'],
+    points: ['学資保険は返戻率が高いものを選ぶことが重要', '契約者（親）の死亡・高度障害で以後の保険料が免除になる保障も確認', 'NISA・iDeCoとの役割分担を整理して提案'],
+    ng: ['返戻率だけで選ばず、保障内容も確認する', '途中解約すると元本を下回る場合がある'],
+    next: ['子どもの年齢・人数', '毎月積み立てられる金額', '現在の貯蓄・資産状況']
+  },
+  s1: {
+    label: '就業不能リスク（個人事業主）',
+    talk: '「会社員には傷病手当金がありますが、個人事業主にはありません。もし3ヶ月働けなくなったら、どうしますか？」という問いが効果的です。',
+    types: ['所得補償保険', '就業不能保険', '小規模企業共済（廃業・引退時の備え）'],
+    points: ['個人事業主は社会保障が薄いため、民間保険での補完が特に重要', '免責期間（7日・60日など）によって保険料が変わる', '月々の固定費（家賃・リース料など）の洗い出しと照合'],
+    ng: ['国民健康保険には傷病手当金がない（一部自治体除く）', '免責期間中の生活費の確保も併せて考える'],
+    next: ['月収・固定費の把握', '現在の貯蓄・緊急予備資金', '業種・職業のリスク水準']
+  },
+  s2: {
+    label: '業務上の賠償リスク',
+    talk: '「お客様のPCを壊した、納品物にミスがあった、そのときに払える自信はありますか？」というリアルな例が響きます。',
+    types: ['フリーランス賠償責任保険', '業務過誤賠償責任保険', '専門職業人賠償保険（E&O保険）'],
+    points: ['フリーランス向けパッケージ商品が増えている', '補償内容：業務上の賠償・情報漏洩・著作権侵害など', '団体加入で割安になるケースがある（組合・協会経由）'],
+    ng: ['クライアントとの業務委託契約の免責条項だけに頼るのは危険'],
+    next: ['主な業務内容・クライアント規模', '契約書の有無・免責事項の確認', '過去のトラブル経験の有無']
+  },
+  s3: {
+    label: '老後資金の準備（個人事業主）',
+    talk: '「個人事業主は厚生年金がなく、退職金もゼロです。自分で積み立てる仕組みを作りましょう」という入り方が刺さります。',
+    types: ['小規模企業共済（掛金全額所得控除）', 'iDeCo（個人型確定拠出年金）', '個人年金保険'],
+    points: ['小規模企業共済は月1,000円〜70,000円で全額所得控除', 'iDeCoは運用益が非課税・受取時も控除あり', 'どちらも節税効果が高く、老後資金と節税を同時に実現できる'],
+    ng: ['途中解約は不利になる制度が多いため、無理のない掛金設定が重要'],
+    next: ['現在の年収・課税所得の把握', 'iDeCo・共済の加入状況', '希望する老後の生活水準']
+  },
+  s4: {
+    label: '入院・医療リスク',
+    talk: '「仕事を休んだら収入がゼロになる立場だからこそ、医療保険の設計が会社員より重要です」という視点が響きます。',
+    types: ['医療保険（入院・手術給付）', '就業不能保険', 'がん保険'],
+    points: ['入院給付金だけでなく、通院補償も重要', '自由診療（抗がん剤・先進医療）への備えも視野に入れる', '傷病手当金がない分、給付金額の設定を厚めにする'],
+    ng: ['会社員と同じ設計では不十分なケースが多い'],
+    next: ['家族構成・扶養家族の有無', '現在の貯蓄・緊急予備資金', '業種・健康状態']
+  },
+  s5: {
+    label: '自宅兼事務所リスク',
+    talk: '「自宅と事務所を兼用している場合、一般の火災保険では仕事関係の損害が補償されないことがあります」という注意喚起が有効です。',
+    types: ['住宅・事業用兼用の火災保険', '地震保険', '動産総合保険（機材・備品）'],
+    points: ['一般の住宅用火災保険では業務用機器の損害が対象外になる場合がある', 'PCや機材は動産保険で別途カバーする方法もある', '賃貸の場合は借家人賠償責任も確認'],
+    ng: ['住宅用・事業用の区分を保険会社に正確に告知していないと支払い拒否のリスク'],
+    next: ['自宅の所有・賃貸の別', '業務用機器・備品の種類と金額', '現在の火災保険の加入状況']
+  },
+  s6: {
+    label: '情報漏洩・著作権リスク',
+    talk: '「フリーランスでも、クライアントの機密情報を扱う以上、情報漏洩リスクは避けられません」という入り方が刺さります。',
+    types: ['フリーランス向けサイバー保険', '業務過誤・情報漏洩賠償保険'],
+    points: ['PCの盗難・紛失による情報漏洩も補償対象になる商品がある', '著作権侵害・コンテンツ使用に関する賠償も対象になる場合がある', '団体保険（フリーランス協会など）で安く加入できるケースも'],
+    ng: ['業務委託契約の機密保持条項だけでは損害賠償に対応しきれない'],
+    next: ['取り扱う情報の種類・機密性', 'クライアントとの契約書内容', 'セキュリティ対策の現状']
+  },
+  s7: {
+    label: '外注・協力会社への補償',
+    talk: '「外注スタッフさんが作業中にケガをした場合、労災が使えないことはご存知ですか？」という問いが多くの事業主に刺さります。',
+    types: ['特別加入（一人親方・中小事業主の労災）', '請負業者賠償責任保険', '傷害保険（個人）'],
+    points: ['外注・業務委託の方は通常の労災保険が適用されない', '特別加入制度で労災保険に加入できる場合がある', '万一の事故時の責任の所在を契約書で明確にしておく'],
+    ng: ['「請負だから関係ない」という認識は法的に通らないケースが増えている'],
+    next: ['外注・協力会社の人数・業務内容', '現在の契約形態（請負・委任など）', '過去の事故・トラブル経験']
+  },
+  s8: {
+    label: '節税×保険の活用',
+    talk: '「保険を節税ツールとして使う考え方がありますが、2019年以降のルール変更をご存知ですか？」という入り方が信頼感につながります。',
+    types: ['小規模企業共済', 'iDeCo', '個人年金保険（生命保険料控除）', '経営セーフティ共済（倒産防止）'],
+    points: ['小規模企業共済・iDeCoは節税効果が高く老後資金にもなる', '個人年金保険料控除（年間最大4万円の所得控除）も活用できる', '2019年以降、法人向け高額解約返戻金型保険の損金算入に上限規制がある'],
+    ng: ['節税目的だけで保険に加入すると、保障のバランスが崩れる', '税務ルールは改正が多いため、常に最新情報の確認が必要'],
+    next: ['現在の課税所得・税率の把握', '既存の共済・iDeCoの加入状況', '事業の収支見通し']
+  }
+};
+
+// 状態管理
+let currentAttr = null;
+let selectedConcerns = [];
+
+function selectAttr(attr, el) {
+  document.querySelectorAll('.attr-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  currentAttr = attr;
+  setTimeout(() => goStep(2), 300);
+}
+
+function renderConcerns() {
+  const grid = document.getElementById('concernGrid');
+  grid.innerHTML = '';
+  selectedConcerns = [];
+  const list = concerns[currentAttr] || [];
+  list.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'concern-card';
+    div.onclick = () => toggleConcern(c.id, div);
+    div.innerHTML = `
+      <div class="concern-check" id="chk-${c.id}"></div>
+      <div class="concern-icon">${c.icon}</div>
+      <div class="concern-text">${c.text}</div>
+    `;
+    grid.appendChild(div);
+  });
+  document.getElementById('btnToResult').disabled = true;
+}
+
+function toggleConcern(id, el) {
+  const idx = selectedConcerns.indexOf(id);
+  const chk = document.getElementById('chk-' + id);
+  if (idx === -1) {
+    selectedConcerns.push(id);
+    el.classList.add('selected');
+    chk.textContent = '✓';
+  } else {
+    selectedConcerns.splice(idx, 1);
+    el.classList.remove('selected');
+    chk.textContent = '';
+  }
+  document.getElementById('btnToResult').disabled = selectedConcerns.length === 0;
+}
+
+function showResult() {
+  goStep(3);
+  const container = document.getElementById('resultContent');
+  container.innerHTML = '';
+
+  // ヘッダー
+  const attrNames = { corporate: '法人（中小企業）', personal: '個人', sole: '個人事業主' };
+  const tags = selectedConcerns.map(id => results[id]?.label || id).filter(Boolean);
+  
+  const header = document.createElement('div');
+  header.className = 'result-header';
+  header.innerHTML = `
+    <div class="result-header-label">説明サポートレポート</div>
+    <div class="result-header-title">【${attrNames[currentAttr]}】のお客様への保険提案ポイント</div>
+    <div class="result-tags">${tags.map(t => `<span class="result-tag">${t}</span>`).join('')}</div>
+  `;
+  container.appendChild(header);
+
+  selectedConcerns.forEach(id => {
+    const r = results[id];
+    if (!r) return;
+
+    const label = r.label;
+
+    // トーク例
+    const b1 = document.createElement('div');
+    b1.className = 'result-block';
+    b1.innerHTML = `
+      <div class="result-block-title">💬 ${label}｜トークのきっかけ</div>
+      <div class="result-item"><span class="result-item-dot">›</span><span>${r.talk}</span></div>
+    `;
+    container.appendChild(b1);
+
+    // 関連保険
+    const b2 = document.createElement('div');
+    b2.className = 'result-block gold';
+    b2.innerHTML = `
+      <div class="result-block-title">📋 関連する保険の種類</div>
+      ${r.types.map(t => `<div class="result-item"><span class="result-item-dot">›</span><span>${t}</span></div>`).join('')}
+    `;
+    container.appendChild(b2);
+
+    // チェックポイント
+    const b3 = document.createElement('div');
+    b3.className = 'result-block';
+    b3.innerHTML = `
+      <div class="result-block-title">✅ 提案時のチェックポイント</div>
+      ${r.points.map(p => `<div class="result-item"><span class="result-item-dot">›</span><span>${p}</span></div>`).join('')}
+    `;
+    container.appendChild(b3);
+
+    // NGポイント
+    const b4 = document.createElement('div');
+    b4.className = 'result-block warn';
+    b4.innerHTML = `
+      <div class="result-block-title">⚠️ 注意・NGポイント</div>
+      ${r.ng.map(n => `<div class="result-item"><span class="result-item-dot">›</span><span>${n}</span></div>`).join('')}
+    `;
+    container.appendChild(b4);
+
+    // 次回確認
+    const b5 = document.createElement('div');
+    b5.className = 'result-block gold';
+    b5.innerHTML = `
+      <div class="result-block-title">🗒 次回面談で確認すること</div>
+      ${r.next.map(n => `<div class="result-item"><span class="result-item-dot">›</span><span>${n}</span></div>`).join('')}
+    `;
+    container.appendChild(b5);
+  });
+
+  // コピー用テキスト生成
+  const attrNames2 = { corporate: '法人（中小企業）', personal: '個人', sole: '個人事業主' };
+  let copyText = `【保険みっけ 説明サポートメモ】\n`;
+  copyText += `対象：${attrNames2[currentAttr]}\n`;
+  copyText += `─────────────────\n\n`;
+  selectedConcerns.forEach(id => {
+    const r = results[id];
+    if (!r) return;
+    copyText += `■ ${r.label}\n`;
+    copyText += `▶ トーク例\n${r.talk}\n\n`;
+    copyText += `▶ 関連保険\n${r.types.map(t => '・' + t).join('\n')}\n\n`;
+    copyText += `▶ チェックポイント\n${r.points.map(p => '・' + p).join('\n')}\n\n`;
+    copyText += `▶ 注意・NGポイント\n${r.ng.map(n => '・' + n).join('\n')}\n\n`;
+    copyText += `▶ 次回確認事項\n${r.next.map(n => '・' + n).join('\n')}\n\n`;
+    copyText += `─────────────────\n\n`;
+  });
+  copyText += `Powered by 保険みっけ｜Smile Plus Consulting`;
+  document.getElementById('copyArea').textContent = copyText;
+}
+
+function toggleCopy() {
+  const area = document.getElementById('copyArea');
+  const isShow = area.classList.contains('show');
+  area.classList.toggle('show');
+  if (!isShow) {
+    // コピー実行
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(area.textContent).then(() => {
+        alert('📋 トークメモをクリップボードにコピーしました！');
+      });
+    }
+    area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function goStep(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+
+  // ステップインジケーター更新
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('step' + i + 'Ind');
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  });
+  [1,2].forEach(i => {
+    const line = document.getElementById('line' + i);
+    line.classList.remove('done');
+    if (i < n) line.classList.add('done');
+  });
+
+  if (n === 2) renderConcerns();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
