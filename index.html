@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>保険みっけ｜お客様の困りごとから、伝わる説明をみつける</title>
+<link rel="icon" type="image/png" href="https://spc-jp.github.io/hoken-mikke/favicon.png">
+<link rel="apple-touch-icon" href="https://spc-jp.github.io/hoken-mikke/favicon.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Serif+JP:wght@700&display=swap');
   :root {
@@ -26,11 +28,11 @@
   .header h1 span{color:var(--gold);}
   .header p{font-size:12px;color:rgba(255,255,255,0.75);position:relative;z-index:1;}
 
-  .steps-bar{background:var(--white);padding:16px 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(34,54,112,0.08);position:sticky;top:0;z-index:100;}
-  .step-item{display:flex;align-items:center;gap:6px;}
-  .step-num{width:26px;height:26px;border-radius:50%;background:var(--gray-200);color:var(--gray-400);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .3s;}
-  .step-label{font-size:11px;color:var(--gray-400);font-weight:500;transition:all .3s;}
-  .step-line{width:24px;height:2px;background:var(--gray-200);margin:0 4px;transition:all .3s;}
+  .steps-bar{background:var(--white);padding:14px 12px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(34,54,112,0.08);position:sticky;top:0;z-index:100;}
+  .step-item{display:flex;align-items:center;gap:4px;}
+  .step-num{width:22px;height:22px;border-radius:50%;background:var(--gray-200);color:var(--gray-400);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0;}
+  .step-label{font-size:10px;color:var(--gray-400);font-weight:500;transition:all .3s;white-space:nowrap;}
+  .step-line{width:14px;height:2px;background:var(--gray-200);margin:0 3px;transition:all .3s;flex-shrink:0;}
   .step-item.active .step-num{background:var(--navy);color:var(--white);}
   .step-item.active .step-label{color:var(--navy);font-weight:700;}
   .step-item.done .step-num{background:var(--gold);color:var(--navy-dark);}
@@ -52,6 +54,24 @@
   .attr-card.selected .attr-label{color:var(--white);}
   .attr-sub{font-size:10px;color:var(--gray-400);margin-top:4px;}
   .attr-card.selected .attr-sub{color:rgba(255,255,255,0.7);}
+
+  /* ── 業種選択カード ── */
+  .industry-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .industry-card{background:var(--white);border:2px solid var(--gray-200);border-radius:12px;padding:14px 10px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(34,54,112,.06);display:flex;align-items:center;gap:10px;}
+  .industry-card:hover{border-color:var(--gold);transform:translateY(-1px);}
+  .industry-card.selected{border-color:var(--gold);background:var(--gold-pale);}
+  .industry-icon{font-size:24px;flex-shrink:0;}
+  .industry-text{flex:1;min-width:0;}
+  .industry-label{font-size:12px;font-weight:700;color:var(--navy);line-height:1.3;}
+  .industry-sub{font-size:10px;color:var(--gray-400);margin-top:2px;line-height:1.2;}
+
+  /* ── 業種スキップボタン ── */
+  .btn-sub-skip{background:#fff;color:var(--gray-700);border:1px dashed var(--gray-400);font-size:12px;font-weight:500;}
+  .btn-sub-skip:hover{background:var(--gray-100);border-color:var(--gray-700);}
+
+  /* ── 業種特化バッジ ── */
+  .concern-card.industry-tag{position:relative;}
+  .concern-badge{position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--gold);color:var(--navy-dark);letter-spacing:.05em;}
 
   .concern-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
   .concern-card{background:var(--white);border:2px solid var(--gray-200);border-radius:10px;padding:14px 12px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;box-shadow:0 2px 8px rgba(34,54,112,.06);}
@@ -131,22 +151,83 @@
 
   .footer{text-align:center;padding:20px;font-size:11px;color:var(--gray-400);}
   .footer span{color:var(--navy);font-weight:700;}
+
+  /* ── 利用状況バナー ── */
+  .usage-banner{position:relative;text-align:center;padding:8px 16px;font-size:11px;font-weight:700;letter-spacing:.05em;cursor:default;}
+  .usage-banner.banner-free{background:linear-gradient(90deg,#f0c800,#D0A900);color:var(--navy-dark);}
+  .usage-banner.banner-free.warn{background:linear-gradient(90deg,#e8892a,#e05a5a);color:#fff;animation:blink 1.4s infinite;cursor:pointer;}
+  .usage-banner.banner-lite{background:linear-gradient(90deg,#047857,#10b981);color:#fff;}
+  .usage-banner.banner-pro{background:linear-gradient(90deg,#b07d10,#daa520);color:#fff;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.78;}}
+
+  /* ── オーバーレイ ── */
+  .overlay{position:fixed;inset:0;background:rgba(23,37,80,.62);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;animation:fadeIn .2s ease;}
+  .overlay.show{display:flex;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:#fff;border-radius:16px;padding:24px 20px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .3s ease;}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .modal h3{font-family:'Noto Serif JP',serif;font-size:20px;font-weight:700;color:var(--navy-dark);margin-bottom:6px;text-align:center;}
+  .modal .modal-sub{font-size:12px;color:var(--gray-400);text-align:center;margin-bottom:16px;}
+  .modal .modal-icon{font-size:44px;text-align:center;margin-bottom:8px;}
+  .modal .modal-lead{font-size:13px;color:var(--gray-700);line-height:1.7;margin-bottom:16px;text-align:center;}
+
+  /* ── プランカード ── */
+  .plan-card{border-radius:12px;padding:16px;margin-bottom:12px;}
+  .plan-card.lite{background:#ecfdf5;border:2px solid #10b981;}
+  .plan-card.pro{background:#fffbeb;border:2px solid #D0A900;}
+  .plan-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .plan-name{font-size:14px;font-weight:700;}
+  .plan-card.lite .plan-name{color:#047857;}
+  .plan-card.pro .plan-name{color:#8a6f00;}
+  .plan-price{font-size:18px;font-weight:700;}
+  .plan-card.lite .plan-price{color:#047857;}
+  .plan-card.pro .plan-price{color:#8a6f00;}
+  .plan-unit{font-size:10px;font-weight:500;}
+  .plan-features{list-style:none;padding:0;margin:0 0 12px 0;font-size:12px;color:var(--gray-700);line-height:1.8;}
+  .plan-btn{display:block;width:100%;padding:11px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;}
+  .plan-btn.lite{background:linear-gradient(135deg,#047857,#10b981);color:#fff;}
+  .plan-btn.pro{background:linear-gradient(135deg,#b07d10,#daa520);color:#fff;}
+  .plan-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.15);}
+
+  /* ── サブボタン ── */
+  .btn-sub{display:block;width:100%;padding:11px;border:1px solid var(--gray-200);background:#fff;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;color:var(--gray-700);cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-sub:hover{background:var(--gray-100);}
+  .btn-close{background:none;border:none;color:var(--gray-400);font-size:12px;cursor:pointer;margin-top:10px;width:100%;padding:8px;}
+  .btn-close:hover{color:var(--gray-700);}
+
+  /* ── PW入力 ── */
+  .pw-input{width:100%;padding:12px;border:2px solid var(--gray-200);border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:14px;text-align:center;letter-spacing:.1em;margin-bottom:8px;}
+  .pw-input:focus{outline:none;border-color:var(--navy);}
+  .pw-msg{font-size:11px;text-align:center;margin-bottom:12px;min-height:14px;}
+  .pw-msg.ok{color:#047857;}
+  .pw-msg.ng{color:#c0392b;}
+
+  /* ── プランバッジ（ヘッダー） ── */
+  .plan-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;padding:3px 10px;border-radius:20px;margin-left:6px;vertical-align:middle;}
+  .plan-badge.lite{background:#10b981;color:#fff;}
+  .plan-badge.pro{background:#daa520;color:#fff;}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-badge">士業・保険代理店向けツール</div>
-  <h1>保険<span>みっけ</span></h1>
+  <h1>保険<span>みっけ</span><span class="plan-badge" id="planBadge" style="display:none;"></span></h1>
   <p>お客様の困りごとから、伝わる説明をみつける</p>
+</div>
+
+<div class="usage-banner banner-free" id="usageBanner" onclick="handleBannerClick()">
+  🎁 今なら3回まで無料でお試しいただけます
 </div>
 
 <div class="steps-bar">
   <div class="step-item active" id="step1Ind"><div class="step-num">1</div><div class="step-label">属性</div></div>
   <div class="step-line" id="line1"></div>
-  <div class="step-item" id="step2Ind"><div class="step-num">2</div><div class="step-label">困りごと</div></div>
+  <div class="step-item" id="step15Ind"><div class="step-num">2</div><div class="step-label">業種</div></div>
+  <div class="step-line" id="line15"></div>
+  <div class="step-item" id="step2Ind"><div class="step-num">3</div><div class="step-label">困りごと</div></div>
   <div class="step-line" id="line2"></div>
-  <div class="step-item" id="step3Ind"><div class="step-num">3</div><div class="step-label">リスク分析</div></div>
+  <div class="step-item" id="step3Ind"><div class="step-num">4</div><div class="step-label">分析</div></div>
 </div>
 
 <div class="main">
@@ -162,9 +243,18 @@
     <p class="hint" style="margin-top:12px;">タップして選んでください</p>
   </div>
 
+  <!-- STEP1.5：業種選択（法人・個人事業主のみ） -->
+  <div class="section" id="step15">
+    <button class="btn btn-back" onclick="goStep(1)">← 属性を選び直す</button>
+    <div class="section-title">業種を選んでください</div>
+    <div class="industry-grid" id="industryGrid"></div>
+    <p class="hint" style="margin-top:12px;">業種を選ぶと、その業界ならではの困りごとも追加されます ✨</p>
+    <button class="btn btn-sub-skip" onclick="skipIndustry()" style="margin-top:14px;">業種を選ばずに進む →</button>
+  </div>
+
   <!-- STEP2 -->
   <div class="section" id="step2">
-    <button class="btn btn-back" onclick="goStep(1)">← 属性を選び直す</button>
+    <button class="btn btn-back" onclick="goBackFromStep2()">← 戻る</button>
     <div class="section-title">困りごとを選んでください（複数選択OK）</div>
     <div class="concern-grid" id="concernGrid"></div>
     <button class="btn btn-primary" id="btnToResult" onclick="showResult()" disabled>リスク分析レポートを見る →</button>
@@ -213,9 +303,454 @@
   </div>
 </div>
 
-<div class="footer">Powered by <span>Smile Plus Consulting</span>｜保険みっけ β版</div>
+<div class="footer">考えるをひとりにしない｜<span>保険みっけ</span></div>
+
+<!-- ========== 購入モーダル ========== -->
+<div class="overlay" id="upgradeModal">
+  <div class="modal">
+    <div class="modal-icon">🔒</div>
+    <h3>無料お試しが終了しました</h3>
+    <p class="modal-sub" id="upgUsage">無料お試し 3 / 3 回</p>
+    <p class="modal-lead">引き続きご利用いただくには<br>下記のいずれかのプランをお選びください</p>
+
+    <!-- ライト版 -->
+    <div class="plan-card lite">
+      <div class="plan-head">
+        <div class="plan-name">📘 ライト版（買い切り）</div>
+        <div class="plan-price">980<span class="plan-unit">円</span></div>
+      </div>
+      <ul class="plan-features">
+        <li>✅ 100回まで分析OK</li>
+        <li>✅ 全機能フル利用</li>
+        <li>✅ トークメモのコピー</li>
+        <li>✅ レーダー＋優先度マトリクス</li>
+      </ul>
+      <button class="plan-btn lite" onclick="goToNote()">noteで購入する →</button>
+    </div>
+
+    <!-- Pro版 -->
+    <div class="plan-card pro">
+      <div class="plan-head">
+        <div class="plan-name">👑 Pro版（月額）</div>
+        <div class="plan-price">1,980<span class="plan-unit">円/月</span></div>
+      </div>
+      <ul class="plan-features">
+        <li>✅ 無制限に分析OK</li>
+        <li>✅ 全機能フル利用</li>
+        <li>✅ PDFレポート出力（近日）</li>
+        <li>✅ 事務所名入りレポート（近日）</li>
+        <li>✅ 解約自由</li>
+      </ul>
+      <button class="plan-btn pro" onclick="goToStripe()">Stripeで購入する →</button>
+    </div>
+
+    <button class="btn-sub" onclick="openPwModal()">🔑 すでにご購入の方（パスワード入力）</button>
+    <button class="btn-close" onclick="closeUpgradeModal()">閉じる</button>
+  </div>
+</div>
+
+<!-- ========== パスワード入力モーダル ========== -->
+<div class="overlay" id="pwModal">
+  <div class="modal">
+    <div class="modal-icon">🔑</div>
+    <h3>パスワードを入力</h3>
+    <p class="modal-sub">ご購入時にお渡ししたパスワードを入力してください</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="パスワード" autocomplete="off">
+    <div class="pw-msg" id="pwMsg"></div>
+    <button class="plan-btn pro" id="pwSubmitBtn" onclick="checkPassword()">解除する</button>
+    <button class="btn-sub" onclick="closePwModal()">← 戻る</button>
+  </div>
+</div>
 
 <script>
+// ========================================
+// 🔧 設定（あとで差し替える項目）
+// ========================================
+const WORKER_URL = 'https://hoken-mikke.yymmatsu.workers.dev/';   // Cloudflare WorkerのPW検証API
+const STRIPE_URL = 'https://buy.stripe.com/eVqfZgdL4fvD3GD4oIcV20O'; // Pro版 月額1,980円のStripe Payment Link
+const NOTE_URL   = '【noteリンク】';      // ライト版 買い切り980円のnote販売URL（あとで差し替え）
+const FREE_LIMIT = 3;                    // 無料お試し回数
+const LITE_LIMIT = 100;                  // ライト版の利用上限
+
+// ========================================
+// 💾 状態管理（localStorage）
+// ========================================
+const LS_PLAN  = 'hoken_plan';   // 'free' | 'lite' | 'pro'
+const LS_COUNT = 'hoken_count';  // 利用回数（累計）
+
+const S = {
+  plan:  localStorage.getItem(LS_PLAN)  || 'free',
+  count: parseInt(localStorage.getItem(LS_COUNT) || '0', 10),
+};
+
+function saveState(){
+  localStorage.setItem(LS_PLAN,  S.plan);
+  localStorage.setItem(LS_COUNT, String(S.count));
+}
+
+// 上限チェック
+function getLimit(){
+  if(S.plan==='pro')  return Infinity;
+  if(S.plan==='lite') return LITE_LIMIT;
+  return FREE_LIMIT;
+}
+function canUse(){ return S.count < getLimit(); }
+
+// 利用カウント+1
+function incrementUsage(){
+  S.count += 1;
+  saveState();
+  updateBanner();
+}
+
+// ========================================
+// 🎨 バナー＆バッジ更新
+// ========================================
+function updateBanner(){
+  const banner = document.getElementById('usageBanner');
+  const badge  = document.getElementById('planBadge');
+  const limit  = getLimit();
+  const remain = limit - S.count;
+
+  banner.classList.remove('banner-free','banner-lite','banner-pro','warn');
+
+  if(S.plan==='pro'){
+    banner.classList.add('banner-pro');
+    banner.innerHTML = '👑 Pro版でご利用中｜無制限';
+    badge.style.display='inline-block';
+    badge.className='plan-badge pro';
+    badge.textContent='Pro';
+  } else if(S.plan==='lite'){
+    banner.classList.add('banner-lite');
+    banner.innerHTML = `📘 ライト版でご利用中｜残り ${Math.max(0,remain)} / ${LITE_LIMIT} 回`;
+    badge.style.display='inline-block';
+    badge.className='plan-badge lite';
+    badge.textContent='Lite';
+    if(remain<=0){
+      banner.classList.add('warn');
+      banner.innerHTML = '⚠️ ライト版の利用回数が上限に達しました（タップ）';
+    }
+  } else {
+    banner.classList.add('banner-free');
+    if(S.count===0){
+      banner.innerHTML = `🎁 今なら${FREE_LIMIT}回まで無料でお試しいただけます`;
+    } else if(remain>0){
+      banner.innerHTML = `🎁 無料お試し｜残り ${remain} / ${FREE_LIMIT} 回`;
+    } else {
+      banner.classList.add('warn');
+      banner.innerHTML = '⚠️ 無料お試しが終了しました（タップで購入）';
+    }
+    badge.style.display='none';
+  }
+}
+
+function handleBannerClick(){
+  if(!canUse()) showUpgradeModal();
+}
+
+// ========================================
+// 🛒 購入モーダル
+// ========================================
+function showUpgradeModal(){
+  const limit = getLimit();
+  const lbl = S.plan==='lite'
+    ? `ライト版 ${S.count} / ${LITE_LIMIT} 回（上限到達）`
+    : `無料お試し ${S.count} / ${FREE_LIMIT} 回`;
+  document.getElementById('upgUsage').textContent = lbl;
+  document.getElementById('upgradeModal').classList.add('show');
+}
+function closeUpgradeModal(){
+  document.getElementById('upgradeModal').classList.remove('show');
+}
+function goToNote(){
+  if(NOTE_URL==='【noteリンク】'){
+    alert('⚠️ note販売ページのURLが未設定です。\nHTML内の NOTE_URL を実際のURLに差し替えてください。');
+    return;
+  }
+  window.open(NOTE_URL,'_blank');
+}
+function goToStripe(){
+  if(STRIPE_URL==='【Stripeリンク】'){
+    alert('⚠️ Stripe決済URLが未設定です。\nHTML内の STRIPE_URL を実際のURLに差し替えてください。');
+    return;
+  }
+  window.open(STRIPE_URL,'_blank');
+}
+
+// ========================================
+// 🔑 パスワード入力モーダル
+// ========================================
+function openPwModal(){
+  closeUpgradeModal();
+  document.getElementById('pwInput').value='';
+  document.getElementById('pwMsg').textContent='';
+  document.getElementById('pwMsg').className='pw-msg';
+  document.getElementById('pwModal').classList.add('show');
+  setTimeout(()=>document.getElementById('pwInput').focus(),100);
+}
+function closePwModal(){
+  document.getElementById('pwModal').classList.remove('show');
+}
+async function checkPassword(){
+  const v = (document.getElementById('pwInput').value||'').trim();
+  const msg = document.getElementById('pwMsg');
+  const btn = document.getElementById('pwSubmitBtn');
+
+  if(!v){
+    msg.textContent='❌ パスワードを入力してください';
+    msg.className='pw-msg ng';
+    return;
+  }
+
+  // ボタン無効化＆ローディング
+  btn.disabled = true;
+  btn.textContent = '🔄 確認中...';
+  msg.textContent='';
+  msg.className='pw-msg';
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: v }),
+    });
+    const data = await res.json();
+
+    if(data.ok && data.plan){
+      // 認証成功
+      S.plan = data.plan;
+      S.count = 0;
+      saveState();
+      const labelTxt = data.plan === 'pro' ? 'Pro版' : 'ライト版';
+      msg.textContent = `✅ ${labelTxt}が有効になりました`;
+      msg.className = 'pw-msg ok';
+      setTimeout(()=>{
+        closePwModal();
+        updateBanner();
+        btn.disabled = false;
+        btn.textContent = '解除する';
+      }, 900);
+    } else {
+      // PW不一致
+      msg.textContent = '❌ パスワードが正しくありません';
+      msg.className = 'pw-msg ng';
+      btn.disabled = false;
+      btn.textContent = '解除する';
+    }
+  } catch(e) {
+    // ネットワークエラー
+    msg.textContent = '⚠️ 通信エラーが発生しました（時間をおいて再試行ください）';
+    msg.className = 'pw-msg ng';
+    btn.disabled = false;
+    btn.textContent = '解除する';
+  }
+}
+
+// Enterキーで判定
+document.addEventListener('DOMContentLoaded',()=>{
+  updateBanner();
+  const pwInput=document.getElementById('pwInput');
+  if(pwInput){
+    pwInput.addEventListener('keydown',e=>{
+      if(e.key==='Enter') checkPassword();
+    });
+  }
+});
+
+// ?reset=1 で状態リセット（動作確認用）
+if(location.search.includes('reset=1')){
+  localStorage.removeItem(LS_PLAN);
+  localStorage.removeItem(LS_COUNT);
+  S.plan='free'; S.count=0;
+}
+
+// ========================================
+// 業種データ（14業種）
+// 法人8業種＋個人事業主6業種
+// ========================================
+
+const INDUSTRIES = {
+  corporate: [
+    {id:'mfg', icon:'🏭', label:'製造業',          sub:'機械・工場・製品'},
+    {id:'con', icon:'🏗', label:'建設業',          sub:'現場・施工・職人'},
+    {id:'fb',  icon:'🍽', label:'飲食業',          sub:'店舗・厨房・食材'},
+    {id:'bty', icon:'💇', label:'美容業',          sub:'美容室・エステ・ネイル'},
+    {id:'rtl', icon:'🛍', label:'小売業',          sub:'店舗・在庫・接客'},
+    {id:'it',  icon:'💻', label:'IT・サービス業', sub:'システム・受託'},
+    {id:'med', icon:'🏥', label:'医療・福祉',      sub:'病院・介護・施術所'},
+    {id:'pro', icon:'📋', label:'士業事務所',      sub:'税理士・社労士・行政書士'},
+  ],
+  sole: [
+    {id:'sfb', icon:'☕', label:'飲食（店主）',     sub:'カフェ・小料理屋'},
+    {id:'sbt', icon:'✂️', label:'美容（フリー）',  sub:'美容師・エステ・ネイル'},
+    {id:'scr', icon:'🎨', label:'クリエイター',    sub:'デザイナー・ライター'},
+    {id:'sit', icon:'⌨️', label:'IT・エンジニア',  sub:'プログラマー・WEB'},
+    {id:'scs', icon:'💼', label:'コンサル・コーチ',sub:'士業以外の専門職'},
+    {id:'scf', icon:'🔨', label:'職人',            sub:'大工・電気・配管'},
+  ],
+};
+
+// 業種特化の困りごと（属性ごと）
+const INDUSTRY_CONCERNS = {
+  // ── 法人：製造業 ──
+  mfg: [
+    {id:'mfg1', icon:'⚙️', text:'機械が突然故障して生産が止まるリスク',         axes:{asset:.9,biz:.8},        urgency:.8, impact:.9},
+    {id:'mfg2', icon:'🔥', text:'工場での火災・爆発・有害物質漏れが心配',         axes:{asset:.9,claim:.7,biz:.6},urgency:.7, impact:.95},
+    {id:'mfg3', icon:'📦', text:'製品の欠陥でリコール・回収が発生したら',         axes:{claim:.95,biz:.7},       urgency:.65,impact:.95},
+  ],
+  // ── 法人：建設業 ──
+  con: [
+    {id:'con1', icon:'👷', text:'現場での作業員の転落・重機事故が怖い',           axes:{life:.9,claim:.7,biz:.5},urgency:.85,impact:.95},
+    {id:'con2', icon:'🏚', text:'施工不良で完成後にトラブル・追加補修が発生',     axes:{claim:.95,biz:.6},       urgency:.7, impact:.9},
+    {id:'con3', icon:'📑', text:'元請から保険加入を必須条件として求められる',     axes:{claim:.8,biz:.5},        urgency:.75,impact:.7},
+  ],
+  // ── 法人：飲食業 ──
+  fb: [
+    {id:'fb1', icon:'🤢', text:'食中毒・異物混入でお客様への賠償が怖い',         axes:{claim:.95,biz:.8},       urgency:.7, impact:.95},
+    {id:'fb2', icon:'🍳', text:'厨房の油・コンロからの火災リスク',               axes:{asset:.9,claim:.6,biz:.7},urgency:.75,impact:.9},
+    {id:'fb3', icon:'🪑', text:'店内でお客様が転倒・ケガをしたら',               axes:{claim:.85,life:.4},      urgency:.65,impact:.7},
+  ],
+  // ── 法人：美容業 ──
+  bty: [
+    {id:'bty1', icon:'🧴', text:'施術後にお客様が皮膚トラブル・アレルギー',       axes:{claim:.9,biz:.5},        urgency:.7, impact:.85},
+    {id:'bty2', icon:'💧', text:'シャンプー・薬剤がお客様の私物にかかったら',     axes:{claim:.75,asset:.4},     urgency:.55,impact:.65},
+    {id:'bty3', icon:'👥', text:'スタイリストが急に辞めて売上が落ちる',           axes:{biz:.8,future:.5},       urgency:.6, impact:.8},
+  ],
+  // ── 法人：小売業 ──
+  rtl: [
+    {id:'rtl1', icon:'🚨', text:'万引き・盗難・店内での商品破損',                axes:{asset:.85,biz:.4},       urgency:.6, impact:.7},
+    {id:'rtl2', icon:'📦', text:'販売した商品でお客様にトラブルが発生',         axes:{claim:.85,biz:.5},       urgency:.65,impact:.8},
+    {id:'rtl3', icon:'💦', text:'店舗の火災・水漏れ・在庫の損失',                 axes:{asset:.9,biz:.6},        urgency:.6, impact:.85},
+  ],
+  // ── 法人：IT・サービス業 ──
+  it: [
+    {id:'it1', icon:'🖥', text:'システム障害・納品物の不具合でクライアント賠償', axes:{claim:.9,biz:.6},        urgency:.7, impact:.9},
+    {id:'it2', icon:'🔐', text:'情報漏洩・サイバー攻撃で顧客データ流出',           axes:{cyber:.95,claim:.7},     urgency:.75,impact:.9},
+    {id:'it3', icon:'©️', text:'著作権・契約トラブル・成果物の権利問題',          axes:{claim:.8,biz:.4},        urgency:.55,impact:.7},
+  ],
+  // ── 法人：医療・福祉 ──
+  med: [
+    {id:'med1', icon:'💉', text:'患者・利用者への医療事故・施術トラブル',         axes:{claim:.95,life:.5},      urgency:.8, impact:.95},
+    {id:'med2', icon:'🦠', text:'スタッフの感染症・針刺し事故',                   axes:{life:.85,claim:.5},      urgency:.7, impact:.85},
+    {id:'med3', icon:'📋', text:'カルテ・個人情報の漏洩・誤廃棄',                 axes:{cyber:.9,claim:.8},      urgency:.7, impact:.85},
+  ],
+  // ── 法人：士業事務所 ──
+  pro: [
+    {id:'pro1', icon:'📝', text:'業務過誤・申告ミスで顧問先から損害賠償',         axes:{claim:.95,biz:.6},       urgency:.7, impact:.95},
+    {id:'pro2', icon:'🤐', text:'顧問先の機密情報・確定申告データの漏洩',         axes:{cyber:.85,claim:.8},     urgency:.65,impact:.9},
+    {id:'pro3', icon:'👴', text:'所長の急逝・引退で事務所の継続が困難',           axes:{life:.9,biz:.85,future:.6},urgency:.55,impact:.95},
+  ],
+  // ── 個人事業主：飲食（店主） ──
+  sfb: [
+    {id:'sfb1', icon:'😷', text:'自分が倒れたら店が閉まる',                       axes:{life:.95,biz:.9},        urgency:.85,impact:1.0},
+    {id:'sfb2', icon:'🤢', text:'食中毒・異物混入でお客様トラブル',               axes:{claim:.9,biz:.8},        urgency:.7, impact:.9},
+    {id:'sfb3', icon:'🔥', text:'厨房・店舗の火災・水漏れ',                       axes:{asset:.9,biz:.8},        urgency:.65,impact:.9},
+  ],
+  // ── 個人事業主：美容（フリー） ──
+  sbt: [
+    {id:'sbt1', icon:'🧴', text:'施術後にお客様が皮膚トラブル',                   axes:{claim:.9,biz:.6},        urgency:.7, impact:.85},
+    {id:'sbt2', icon:'🚪', text:'出張先・面貸し先での事故・賠償',                 axes:{claim:.8,biz:.5},        urgency:.6, impact:.75},
+    {id:'sbt3', icon:'✋', text:'手・指のケガで施術ができなくなる',                axes:{life:.9,biz:.9},         urgency:.75,impact:1.0},
+  ],
+  // ── 個人事業主：クリエイター ──
+  scr: [
+    {id:'scr1', icon:'💾', text:'クライアントの素材データを消失・破損',           axes:{claim:.85,cyber:.5,biz:.5},urgency:.65,impact:.8},
+    {id:'scr2', icon:'©️', text:'著作権・肖像権・素材使用のトラブル',              axes:{claim:.9,cyber:.4},      urgency:.6, impact:.85},
+    {id:'scr3', icon:'⏰', text:'病気・事故で締切に間に合わず契約解除',           axes:{life:.85,biz:.85},       urgency:.75,impact:.9},
+  ],
+  // ── 個人事業主：IT・エンジニア ──
+  sit: [
+    {id:'sit1', icon:'🐛', text:'納品物のバグでクライアント業務が止まる',         axes:{claim:.9,biz:.5},        urgency:.7, impact:.85},
+    {id:'sit2', icon:'🔐', text:'クライアントの機密情報・顧客データを漏洩',       axes:{cyber:.95,claim:.8},     urgency:.7, impact:.9},
+    {id:'sit3', icon:'💻', text:'PCの故障・盗難で全データを失う',                 axes:{asset:.7,biz:.8,cyber:.4},urgency:.65,impact:.85},
+  ],
+  // ── 個人事業主：コンサル・コーチ ──
+  scs: [
+    {id:'scs1', icon:'📊', text:'アドバイスでクライアントが損失を出した',         axes:{claim:.85,biz:.4},       urgency:.55,impact:.8},
+    {id:'scs2', icon:'🎤', text:'講演・セミナー会場での参加者の事故',             axes:{claim:.75,life:.3},      urgency:.5, impact:.65},
+    {id:'scs3', icon:'📱', text:'SNS炎上・名誉毀損・誹謗中傷リスク',              axes:{claim:.8,biz:.6,cyber:.4},urgency:.6, impact:.8},
+  ],
+  // ── 個人事業主：職人 ──
+  scf: [
+    {id:'scf1', icon:'🪜', text:'作業中の転落・工具によるケガ',                   axes:{life:.95,biz:.85},       urgency:.85,impact:1.0},
+    {id:'scf2', icon:'🔧', text:'施工ミス・現場での物損事故',                     axes:{claim:.9,biz:.5},        urgency:.65,impact:.85},
+    {id:'scf3', icon:'🏠', text:'顧客宅の家財・近隣への損害',                     axes:{claim:.85,asset:.4},     urgency:.6, impact:.75},
+  ],
+};
+
+// 業種特化の分析結果（results拡張）
+const INDUSTRY_RESULTS = {
+  // ── 製造業 ──
+  mfg1:{label:'機械故障による生産停止リスク',talk:'「主力の機械が1週間止まったら、取引先への影響と売上ダメージはどのくらいになりますか？」と聞くと、製造業のお客様は具体的な数字で考え始めてくれます。',types:['機械保険','企業費用・利益保険（BI保険）','休業補償保険','動産総合保険'],points:['1週間停止した場合の機会損失額を一緒に試算する','主要設備の年式・耐用年数を確認','代替機械の有無・他社への外注可否を把握','補償開始までの待機期間（7日〜14日）を説明'],ng:['火災保険だけでは機械の内部故障・電気的事故をカバーできない','新品交換と修理のどちらで補償されるか保険商品によって異なる','操作ミスによる損害は対象外の商品もある'],next:['主要設備の機種名・年式・現在価額','過去5年の故障・トラブル履歴','既加入の動産総合保険・火災保険の内容','取引先との納期遵守条項の有無']},
+  mfg2:{label:'工場火災・爆発・有害物質漏れリスク',talk:'「工場で火が出たり化学物質が漏れたりすると、自社の損害だけでなく近隣住民や環境への影響まで責任が及びます」というお話をすると、引火物の管理から話が広がります。',types:['企業財産包括保険（火災・爆発・破裂）','施設賠償責任保険','環境汚染賠償責任保険','休業補償保険'],points:['引火物・危険物の保管状況を確認','近隣に住宅・他事業所がある場合は賠償リスクが高まる','消防法・PRTR法など法令対応状況も把握','営業停止中の固定費・人件費の試算'],ng:['火災保険だけでは「近隣への賠償」「環境汚染」は対象外','地震が原因の火災は地震保険が必要','避難命令による営業停止も補償対象に含めるか確認'],next:['取り扱う原材料・化学物質の種類と量','消防設備・避難経路の現状','周辺環境（住宅地・河川・他工場）','PL保険・施設賠償の加入状況']},
+  mfg3:{label:'製品リコール・回収リスク',talk:'「もし御社の製品で消費者にケガが出たり、不具合で大量回収になったら、回収費用だけで億単位ということもあります」と数字で伝えると、リアリティが出ます。',types:['生産物賠償責任保険（PL保険）','リコール保険（生産物回収費用保険）','完成品保証保険','輸出生産物賠償責任保険'],points:['年間の生産数量・出荷先の数で補償額を設計','BtoCとBtoBでリスクが異なる','輸出品は海外PL対応の特約が必要','品質管理体制（ISO9001など）の有無で保険料に影響'],ng:['PL保険だけでは「回収費用」は対象外。リコール保険が別途必要','「下請けだから関係ない」は誤解。下請けも責任を問われる','契約書の免責条項だけでは守りきれない'],next:['主な製品群・年間出荷数・出荷先業界','過去のクレーム・返品・苦情の内容','取引先からの保険加入要求の有無','海外輸出の有無・輸出先国']},
+
+  // ── 建設業 ──
+  con1:{label:'現場での労災・重機事故',talk:'「現場で1件大きな事故が起こると、労災だけでは慰謝料や休業損害をカバーしきれず、会社が傾くケースもあります」とお伝えすると、現場主任の方は真剣に聞いてくれます。',types:['労災上乗せ保険（使用者賠償責任保険）','建設工事保険','傷害総合保険','請負業者賠償責任保険'],points:['労災と上乗せ補償の役割の違いを明確に説明','一人親方・外注職人さんは別途特別加入が必要','作業内容（高所・重機・電気）でリスクが大きく異なる','元請・下請の責任関係の整理'],ng:['「労災があるから大丈夫」は危険な誤解','役員・事業主は労災対象外（特別加入が必要）','一人親方は労災適用外'],next:['作業員数・雇用形態・外注比率','主な作業内容・使用機材','過去の労災・ヒヤリハット履歴','元請からの安全管理要求']},
+  con2:{label:'施工不良・補修リスク',talk:'「お引渡し後に雨漏りや構造上の不具合が見つかった場合、補修費用は数百万円〜数千万円になるケースもあります」と具体例で話します。',types:['建設工事保険（完成後の不具合対応）','請負業者賠償責任保険','瑕疵担保責任保険','住宅瑕疵担保責任保険（住宅事業者向け）'],points:['工事完了から発覚までの期間で補償対応が変わる','建材・構造別にリスクを評価','下請・協力会社のミスも責任を問われる','「品確法」「住宅瑕疵担保履行法」など法令対応'],ng:['工事保険は施工中のみで、完成後は別契約が必要なケース多数','「下請のミス」を理由に責任を逃れることは難しい','瑕疵担保期間（住宅は10年）の理解不足'],next:['主な工事種類・住宅／非住宅の比率','過去の補修対応事例','下請・協力会社の数','瑕疵保険の現在の加入状況']},
+  con3:{label:'元請からの保険加入要求',talk:'「最近、元請さんから保険加入の証明書を求められることが増えていませんか？対応できないと取引停止になるケースも増えています」とお聞きします。',types:['請負業者賠償責任保険','建設工事保険','生産物賠償責任保険','使用者賠償責任保険'],points:['元請の要求補償額（5,000万〜数億円）を確認','証明書の発行・更新が必要','取引先ごとに要求内容が違うので一覧化する','長期契約・年間契約で割安にできる場合あり'],ng:['「最低限の補償額」では今の元請基準を満たさない','保険加入後の証明書発行を怠るとトラブル','業務内容変更時に保険内容が合わなくなる'],next:['主要元請の社名と要求補償額','現在の保険証券のコピー','業務範囲・作業内容の最新版','契約予定の新規元請の有無']},
+
+  // ── 飲食業 ──
+  fb1:{label:'食中毒・異物混入リスク',talk:'「もし食中毒が出てしまうと、治療費や慰謝料だけでなく、店舗の休業期間中の補償まで含めて数百万〜数千万円になるケースもあります」とお伝えします。',types:['生産物賠償責任保険（PL保険・食品向け）','施設賠償責任保険','休業損失補償特約','風評被害対応特約'],points:['治療費・慰謝料・休業補償をセットで設計','複数名発症時の備え（限度額の設定）','保健所営業停止期間中の固定費補填','SNS拡散による風評被害もカバー'],ng:['通常の店舗総合保険には食中毒補償がない場合がある','テイクアウト・デリバリーは別補償が必要なケース','調理者の体調管理は保険でカバーできない範囲'],next:['客席数・1日の客数','テイクアウト・デリバリーの有無','過去のクレーム・体調不良報告','HACCP対応状況']},
+  fb2:{label:'厨房火災・コンロ事故リスク',talk:'「厨房から出火すると、自店の損害だけでなく、上下階のテナント・建物オーナーへの賠償まで及ぶケースが多いんです」と建物全体の話に広げます。',types:['店舗総合保険（火災・破裂・爆発）','施設賠償責任保険','休業損失補償保険','借家人賠償責任保険（テナントの場合）'],points:['建物オーナーへの賠償リスク（数千万〜数億）','厨房機器の再調達価額の確認','営業再開までの期間（通常2〜3ヶ月）','保険金支払いまでの運転資金確保'],ng:['火災保険だけでは「建物オーナーへの賠償」は対象外','テナント物件は借家人賠償責任保険が必須','放置された油・ガス漏れは免責になる可能性'],next:['店舗形態（自社所有／テナント／フランチャイズ）','厨房機器の種類・年式','賃貸契約の特約事項','防火設備・消火器の点検状況']},
+  fb3:{label:'店内でのお客様事故',talk:'「お客様が店内で転倒してケガをした場合、お店側の管理責任が問われることがあります。特に小さなお子様や高齢者のお客様への配慮は重要です」とお話します。',types:['施設賠償責任保険','傷害保険','PL保険（テーブル・椅子の破損による事故）'],points:['濡れた床・段差・椅子のぐらつき等の店内環境を確認','治療費だけでなく慰謝料も補償範囲に','24時間補償か営業時間中のみかを確認','スタッフのミスによる事故もカバー'],ng:['お客様の自損事故は対象外の場合がある','店外（駐車場など）の事故も補償対象に含めるか確認','「お店の管理外」と主張するのは難しい'],next:['席数・通路の幅・段差の有無','過去のヒヤリハット','保険会社からの安全指導内容','駐車場・店外スペースの管理状況']},
+
+  // ── 美容業 ──
+  bty1:{label:'施術トラブル・皮膚トラブル',talk:'「カラー剤やパーマ液でかぶれが出た場合、治療費だけでなく慰謝料を求められるケースもあります。1件のSNS投稿で予約が激減することも」と現実的な話を。',types:['美容業賠償責任保険','PL保険（薬剤・化粧品向け）','施設賠償責任保険','風評被害対応特約'],points:['アレルギーテストの実施記録を残す','カウンセリングシートで同意を取る','メニュー別にリスクの高さを評価','SNS炎上時の対応窓口の有無'],ng:['「お客様の体質によるもの」だけでは責任を回避できない','フリーランス美容師・面貸しは別保険が必要','医療類似行為の範囲を超えると保険対象外'],next:['主要メニュー・薬剤の種類','過去のトラブル事例','スタッフのフリーランス契約の有無','顧客との同意書フォーマット']},
+  bty2:{label:'お客様の私物・備品トラブル',talk:'「お客様のお気に入りの服に薬剤がついた、コートを汚した、貴重品が消えた…という小さなトラブルが意外と多いんです」と日常のリスクから入ります。',types:['施設賠償責任保険','受託物賠償責任保険（預かり品向け）','店舗総合保険'],points:['預かり品の管理ルールを明確に','貴重品の補償上限額の確認','クロークの安全性・防犯対策','スタッフのミス全般をカバーする内容に'],ng:['ロッカーがあっても「自己責任」と言い切れない','現金・貴金属は補償対象外のケースが多い','30万円以上の高額品は別途確認が必要'],next:['お客様の荷物の置き場所','貴重品取り扱いルール','過去のクレーム事例','店内の防犯カメラ設置状況']},
+  bty3:{label:'スタッフ離職リスク',talk:'「主力スタイリストが辞めるとお客様が一緒に離れていく…これは美容業界の最大のリスクですよね。退職金・教育投資という形で備える方法があります」とお話します。',types:['経営者保険（生命保険型）','退職金準備の養老保険','逓増定期保険','スタッフ向け団体保険'],points:['キーマン保険でリスクヘッジ','退職金制度の充実で定着率アップ','団体保険は採用・離職防止の福利厚生にも','保険料の経費処理・税効果も説明'],ng:['「保険でスタッフを縛る」発想は逆効果','退職金準備と節税を混同しない','解約返戻金の税務処理を間違えない'],next:['スタッフ数・勤続年数','退職金規定の有無','過去の離職率','採用にかかる費用']},
+
+  // ── 小売業 ──
+  rtl1:{label:'万引き・盗難リスク',talk:'「万引き被害は年間でいくらくらいですか？小売業の純利益を圧迫する大きな要因ですが、保険で備えられるケースもあります」と数字で切り込みます。',types:['動産総合保険（盗難補償）','店舗総合保険','休業損失補償保険'],points:['年間の棚卸ロス額を一緒に把握','防犯設備（カメラ・タグ）の充実度確認','現金・貴重品の管理ルール','商品ジャンル別のリスク評価'],ng:['「内部不正」は対象外の場合が多い','店外（搬入路・駐車場）の盗難は条件付き','少額・常習的なものは免責ラインに引っかかる'],next:['過去3年の棚卸ロス額','防犯対策の現状','貴重品・高額商品の保管方法','過去の盗難・被害届の件数']},
+  rtl2:{label:'販売商品によるお客様トラブル',talk:'「販売した商品でお客様にケガや損害が出た場合、メーカーだけでなく販売店も責任を問われることがあります」と販売店の責任を強調します。',types:['生産物賠償責任保険（PL保険）','施設賠償責任保険','輸入品の場合は輸入PL特約'],points:['取扱商品のリスク分類','メーカーの保険でカバーされる範囲と販売店責任の切り分け','並行輸入品・自社ブランド商品は要注意','返品・交換時のトラブル対応'],ng:['「メーカー責任だから関係ない」は通用しない場面が増えている','輸入品は国内PLの対象外になるケース','OEM・PB商品は販売者が責任を負う'],next:['取扱商品のジャンル・販売数','輸入品・自社ブランドの比率','過去のクレーム・回収事例','メーカーとの責任分担契約書']},
+  rtl3:{label:'店舗火災・水漏れリスク',talk:'「店舗で1日営業できないと、家賃・人件費・仕入れの損失で1日あたり数十万円のダメージになることもあります」と固定費の話から始めます。',types:['店舗総合保険','動産総合保険（在庫向け）','休業損失補償保険','借家人賠償責任保険'],points:['在庫の時価評価・棚卸との連動','テナント物件はオーナーへの賠償も補償に含める','休業補償の支払対象期間','季節商品は時期で在庫額が変動'],ng:['火災保険の保険金額が現状の在庫に追いついていないケース多数','水漏れ・盗難は別特約が必要なケース','テナント契約での内装工事費の所有関係'],next:['店舗の所有形態（自社／テナント）','平均在庫額・季節変動','賃貸借契約書の特約','現在加入の店舗総合保険の補償内容']},
+
+  // ── IT・サービス業 ──
+  it1:{label:'システム障害・納品物バグリスク',talk:'「納品したシステムでクライアントの業務が止まった場合、損害賠償額は1日あたり数百万円〜数千万円というケースも珍しくありません」と数字で訴えます。',types:['IT業務賠償責任保険','業務過誤賠償責任保険（E&O保険）','サイバー保険'],points:['受注規模に応じた補償額の設計','請負業務と派遣・SES契約での責任の違い','SLA（サービス品質保証）違反への対応','過去案件の補償範囲（テール期間）の確認'],ng:['「契約書の免責条項」だけでは守りきれない','OSS（オープンソース）の脆弱性は対象外のケース','下請けの作業ミスも責任を負う'],next:['主要案件の規模・契約形態','SLA・瑕疵担保期間の標準','下請けエンジニアの管理体制','クライアント業界（金融・医療等）']},
+  it2:{label:'サイバー攻撃・情報漏洩リスク',talk:'「ランサムウェアで業務停止＋顧客データ流出となると、復旧費・賠償・調査費で1億円超のケースもあります。IT企業ほどリスクが高いんです」と業界特有のリスクを伝えます。',types:['サイバー保険','情報漏洩賠償責任保険','業務中断補償（サイバー版）','風評被害対応特約'],points:['事故対応費用（フォレンジック調査・通知費用）も補償に','顧客への賠償と自社復旧費を分けて設計','クラウド利用時の責任分界点','インシデント対応プロセスの整備'],ng:['セキュリティ対策不備は免責の対象になることも','インシデント発生後の保険加入はほぼ不可','24時間以内の事故通知が必要なケース'],next:['取り扱う個人情報の件数','クラウドサービス・SaaS利用状況','過去のインシデント・ヒヤリハット','社内セキュリティ規程・教育の有無']},
+  it3:{label:'著作権・契約トラブル',talk:'「成果物に他社の著作物が含まれていたり、契約書の解釈で揉めると、訴訟費用だけでも数百万円かかります」と弁護士費用の話から入ります。',types:['業務過誤賠償責任保険（E&O保険）','知的財産権侵害賠償責任保険','弁護士費用特約'],points:['受注時の契約書レビューの重要性','成果物の権利関係を明確化','OSS・素材ライブラリのライセンス確認','過去案件のソースコードの取扱'],ng:['「クライアントが許可した」だけでは権利クリアにならない','著作権は「知らなかった」では免責されない','契約書の電子保管・有効期限'],next:['標準契約書のテンプレート有無','使用するOSS・ライブラリのリスト','成果物の著作権譲渡の標準','過去のトラブル・クレーム履歴']},
+
+  // ── 医療・福祉 ──
+  med1:{label:'医療事故・施術トラブル',talk:'「医療事故は当事者だけでなく、ご家族・関係者からの請求まで広がります。施設としての対応力が問われる時代です」と組織対応の重要性を伝えます。',types:['医師賠償責任保険','病院（施設）賠償責任保険','介護事業者賠償責任保険','治療費用補償特約'],points:['個人と施設の両方の保険が必要','診療科目・施術内容ごとのリスク評価','インシデント・アクシデント報告の整備','弁護士・専門家との連携体制'],ng:['個人の保険だけでは施設賠償が足りない','「インフォームドコンセント」が取れていれば免責になるわけではない','過去案件のテール期間（時効後の請求）'],next:['診療科目・1日の患者数','過去のヒヤリハット・インシデント','医療安全管理体制','施設賠償と個人賠償の整理']},
+  med2:{label:'スタッフの感染症・労災',talk:'「コロナ後、医療・介護現場の労災対応はより手厚くする必要があります。スタッフの安心は採用・定着にも直結します」と人材面から訴求。',types:['労災上乗せ保険（医療・介護特化）','団体傷害保険','感染症対応特約','メンタルヘルス対応保険'],points:['針刺し・感染事故への即時対応費用','PCR・抗原検査費用も補償対象に','スタッフのメンタルケア・休職対応','感染拡大時の業務縮小補償'],ng:['「労災があるから」だけでは現在の医療現場には不十分','派遣・委託スタッフは別の補償が必要','個人事業主のスタッフは特別加入が必要'],next:['スタッフ数・雇用形態','過去の労災・感染事故','感染症対策マニュアルの整備状況','メンタルヘルス相談窓口の有無']},
+  med3:{label:'カルテ・個人情報漏洩',talk:'「医療機関の個人情報漏洩は1件あたりの賠償額が一般企業より高くなる傾向があります。HIPAAではないですが、扱う情報の重みが違います」と業界特有性を強調。',types:['サイバー保険（医療機関向け）','情報漏洩賠償責任保険','個人情報漏洩対応費用保険'],points:['電子カルテ・診療記録の管理体制','USB持ち出し・誤送信対策','クラウド型電子カルテのリスク','患者からの開示請求対応'],ng:['紙カルテも漏洩リスクの対象','「医療法人だから対象外」ということはない','個人情報保護法・医療法・診療情報の保管義務'],next:['電子カルテ・紙カルテの管理状況','スタッフのアクセス権限管理','過去の情報漏洩・誤廃棄事故','個人情報保護方針の周知状況']},
+
+  // ── 士業事務所 ──
+  pro1:{label:'業務過誤・申告ミス',talk:'「税理士なら申告ミス、社労士なら手続き漏れ、行政書士なら書類不備…1件のミスで顧問先から請求が来た時、ご自分の財産で対応できますか？」と切実に問います。',types:['税理士職業賠償責任保険','社労士賠償責任保険','行政書士賠償責任保険','弁護士費用特約'],points:['業務範囲・年間業務件数で補償額設計','受任時の業務範囲書面化','過去業務（テール期間）の補償','調査対応費用も含めた設計'],ng:['会員制度の保険は限度額が不十分なケース','「お客様の落ち度」は完全に主張しにくい','業務外（コンサル等）は対象外'],next:['業務範囲・顧問先数','過去の業務ミス・クレーム','損害賠償請求の発生確率','テール期間の希望']},
+  pro2:{label:'顧問先情報・確定申告データ漏洩',talk:'「士業事務所が情報漏洩を起こすと、信用問題で顧問契約の解除が連鎖します。経済的損失は1件の事故では済みません」と顧問契約の連鎖喪失リスクを訴えます。',types:['サイバー保険（士業向け）','情報漏洩賠償責任保険','業務中断補償'],points:['会計・税務ソフトのセキュリティ','クラウド会計ソフトのアクセス管理','メール・FAX誤送信対策','スタッフ・パート従業員の情報管理教育'],ng:['「会計ソフト会社の責任」と言い切れない','個人事業主の顧問先データも対象','紙の決算書・申告書類の管理も含む'],next:['顧問先数・取扱データ量','使用ソフト・クラウドサービス','スタッフのアクセス権限管理','過去のヒヤリハット']},
+  pro3:{label:'所長の急逝・後継者問題',talk:'「先生に万一があった時、顧問先の業務は誰が引き継ぎますか？後継者育成と保険の組み合わせで、事務所の継続性を確保できます」と事業承継の話に展開。',types:['キーマン保険（定期保険）','逓増定期保険','医療法人版役員退職金準備','事業承継保険'],points:['後継者の有無で設計が大きく変わる','顧問契約の引継ぎ体制の整備','スタッフへの退職金準備','法人化している場合は法人契約'],ng:['個人事務所は所長の急逝でほぼ廃業','後継者教育には数年かかる前提で','資格更新・登録の引継ぎ手続きも必要'],next:['後継者の有無・候補','法人化の状況','スタッフ数・勤続年数','顧問先との契約書の引継ぎ条項']},
+
+  // ── 個人事業主：飲食（店主） ──
+  sfb1:{label:'自分が倒れたら店が閉まる',talk:'「ひとりで店を切り盛りされている方は、ご自身が3日入院しただけで売上が止まります。所得補償と医療保険はワンセットで考えるのがおすすめです」と現実的にお話します。',types:['所得補償保険','就業不能保険','医療保険（入院・手術給付）','小規模企業共済'],points:['月の売上から固定費を引いた利益額で補償設計','免責期間（7日／60日）を考慮','長期療養（がん等）への備え','閉店時の固定費・家賃の確保'],ng:['国民健康保険には傷病手当金がない','店舗賃料は休業しても発生する','スタッフがいない店舗は休業＝売上ゼロ'],next:['月商・固定費の把握','緊急予備資金（生活費＋固定費）','既加入の医療保険','家族構成・扶養']},
+  sfb2:{label:'食中毒・異物混入リスク',talk:'「個人店こそ食中毒が出ると致命的です。お客様への賠償と、保健所営業停止中の家賃・固定費が同時に襲ってきます」と二重苦のリスクを伝えます。',types:['個人事業主向けPL保険（食品向け）','店舗総合保険＋食中毒特約','所得補償保険'],points:['営業停止期間中の固定費補填','SNSでの風評被害対応','保健所対応・原因究明費用','再開時の信頼回復策'],ng:['「個人だから保険料が高い」は誤解。専用商品多数','配達・テイクアウトは別補償が必要','調理者の体調不良の自己責任の範囲'],next:['客席数・1日の客数','テイクアウトの有無','過去のクレーム履歴','HACCP対応状況']},
+  sfb3:{label:'厨房・店舗の火災',talk:'「個人店の火災は、自店の損害だけでなく、テナント全体の賠償が及ぶことが多いんです。家賃を払えなくなる前の備えが必要です」と賃貸物件のリスクを訴えます。',types:['店舗総合保険（火災・破裂・爆発）','借家人賠償責任保険','所得補償保険'],points:['内装・厨房機器の評価','再開までの期間（2〜3ヶ月）の固定費','テナントオーナーへの賠償','内装工事費の所有関係'],ng:['住居用火災保険では店舗営業は対象外','借家人賠償は別途必要','放置された油・ガス漏れは免責の可能性'],next:['店舗の所有形態','内装工事費の負担状況','賃貸契約書の特約','防火設備の現状']},
+
+  // ── 個人事業主：美容（フリー） ──
+  sbt1:{label:'施術トラブル・皮膚トラブル',talk:'「フリーで活動されている美容師さん向けの専用保険があります。1件のトラブルで仕事を失う前に、月1,000円程度から備えられます」と価格感も含めて。',types:['美容師向けフリーランス賠償責任保険','PL保険（薬剤向け）','所得補償保険'],points:['月額1,000円程度から加入できる商品多数','面貸し・出張先での施術もカバー','SNS炎上時の対応費用','治療費・慰謝料の上限設定'],ng:['アシスタント時代の保険は対象外になるケース','医療類似行為の範囲','個人事業主は自分で加入が必要'],next:['活動形態（面貸し／出張／自宅）','メニュー・薬剤の種類','顧客との同意書','想定する補償額']},
+  sbt2:{label:'出張・面貸し先での事故',talk:'「面貸し先での事故は、サロンとお客様と自分の三者の責任が絡みます。フリーランス向け保険なら包括的にカバーできます」と複雑な責任関係を整理。',types:['フリーランス賠償責任保険','施設賠償責任保険','受託物賠償責任保険'],points:['面貸し先のサロンの保険との関係','出張先（顧客宅・式場等）でのリスク','移動中の事故・忘れ物','器具・薬剤の管理'],ng:['面貸し先の保険ではフリーランスの業務はカバーされないケース','出張先での事故は自宅サロンの保険対象外のケース多数','器具の盗難・破損は別補償'],next:['面貸し先のサロン名・契約形態','出張頻度・出張先の種類','使用器具の総額','移動手段（車・電車等）']},
+  sbt3:{label:'手・指のケガで施術不能',talk:'「美容師さんの手は商売道具。指を1本ケガしただけで1ヶ月仕事ができなくなることもあります。働けない時の収入の備えが特に重要です」と職業特有のリスクを強調。',types:['所得補償保険（美容師向け）','就業不能保険','傷害保険（手指特化）','医療保険'],points:['手指特化の補償がある商品の選択','長期療養への備え','リハビリ期間中の補償','技術スクール再受講費用'],ng:['通常の医療保険では「働けない」期間の収入はカバーされない','腱鞘炎・職業病は対象外のケース','個人事業主の傷病手当金はない'],next:['月商の把握','緊急予備資金','既加入の医療・所得補償','過去の手指トラブル']},
+
+  // ── 個人事業主：クリエイター ──
+  scr1:{label:'素材データの消失・破損',talk:'「クライアントから預かった素材データを失った場合、納品遅延だけでなく、お客様の機会損失まで請求されるケースがあります」と被害の波及を伝えます。',types:['クリエイター向け業務賠償責任保険','業務過誤賠償責任保険','データ復旧費用補償特約'],points:['バックアップ体制の確認','クライアント業界別のリスク評価','データ消失時の通知義務','クラウドストレージの利用状況'],ng:['「PCの故障だから仕方ない」では責任を免れない','クライアントのデータ保管義務','フリーランス向け専用商品が増加中'],next:['クライアント数・案件規模','使用するクラウド・PC環境','バックアップ頻度','契約書のデータ責任条項']},
+  scr2:{label:'著作権・肖像権トラブル',talk:'「成果物に他人の写真やフォントを使ってしまうと、後から請求が来ることがあります。フリーランスは特に契約書とライセンス管理が大事です」と権利意識を喚起。',types:['クリエイター向け賠償責任保険','知的財産権侵害賠償責任保険','弁護士費用特約'],points:['使用素材のライセンス確認の重要性','クライアントから提供された素材の確認','成果物の二次利用範囲の明確化','過去案件の継続使用リスク'],ng:['「フリー素材」でも商用利用不可のケース','SNSアイコン・ロゴでの権利トラブル','AI生成物の著作権はまだグレーゾーン'],next:['使用する素材サイト・ライセンス','標準契約書のテンプレート','過去案件の素材管理','クライアント業界の著作権意識']},
+  scr3:{label:'病気・事故で締切に間に合わない',talk:'「フリーランスは病気＝収入ゼロです。さらに納期に間に合わないと違約金まで発生します。所得補償と業務賠償の両方が必要です」と二重リスクを整理。',types:['所得補償保険','就業不能保険','業務過誤賠償責任保険','医療保険'],points:['月の売上から固定費を引いた利益額','長期療養への備え','契約書の不可抗力条項','他フリーランスへの外注体制'],ng:['通常の医療保険では収入減はカバーされない','クライアントとの契約書に不可抗力条項がないと違約金','個人事業主に傷病手当金はない'],next:['月商・固定費','緊急予備資金','契約書の納期・違約金条項','外注可能な仲間の有無']},
+
+  // ── 個人事業主：IT・エンジニア ──
+  sit1:{label:'納品物のバグでクライアント業務停止',talk:'「ECサイトのシステムバグでクライアントが1日売上ゼロになったら、補償額は売上の数日分。1人で抱えるには重すぎるリスクです」と規模感で訴えます。',types:['フリーランス向けIT賠償責任保険','業務過誤賠償責任保険','弁護士費用特約'],points:['受注規模に応じた補償額設計','テスト・検収プロセスの整備','契約書での責任範囲の明確化','過去案件の保証期間'],ng:['「個人事業主だから補償不要」は危険','受託案件の規模が大きいほどリスク大','OSS・既存ライブラリの脆弱性は対象外のケース'],next:['受注案件の規模・業界','契約書の標準テンプレート','過去のトラブル事例','下請け・協力体制の有無']},
+  sit2:{label:'機密情報・顧客データの漏洩',talk:'「クライアントのデータベースを扱うエンジニアさんは、情報漏洩のリスクが日常的にあります。フリーランス向けサイバー保険の登場で備えやすくなりました」と最新事情を共有。',types:['フリーランス向けサイバー保険','情報漏洩賠償責任保険','業務過誤賠償保険'],points:['取り扱う個人情報の件数で補償額','業務委託契約での秘密保持条項','作業端末のセキュリティ対策','インシデント発生時の通知義務'],ng:['「クライアントの責任」とは言い切れない','フリーランス向け専用商品が必要','クラウド利用での責任分界点'],next:['案件で扱うデータの種類','秘密保持契約の有無','作業端末のセキュリティ対策','クラウドサービス利用状況']},
+  sit3:{label:'PC故障・盗難でデータ消失',talk:'「PCが壊れた、盗まれた、で全データが消えてしまったら、案件全部の納期がストップします。動産保険＋クラウドバックアップの組み合わせが安心です」と具体策まで提示。',types:['動産総合保険（PC・機材）','業務中断補償','クラウドバックアップ費用補償'],points:['PC・周辺機器の総額','クラウドバックアップの体制','カフェ・コワーキング利用時のリスク','データ復旧費用'],ng:['住宅用火災保険ではPCの仕事使用は対象外のケース','データそのものは「物」ではないので別補償','古いPCの時価評価'],next:['業務用機器のリスト・総額','バックアップ体制','作業場所（自宅／カフェ／コワーキング）','過去のトラブル']},
+
+  // ── 個人事業主：コンサル・コーチ ──
+  scs1:{label:'アドバイスでクライアントが損失',talk:'「コンサルティングのアドバイスで結果が出なかった、損失を出したと言われた時、契約書の免責条項だけでは守りきれません」と専門職特有のリスクを伝えます。',types:['コンサルタント業務賠償責任保険','業務過誤賠償責任保険（E&O保険）','弁護士費用特約'],points:['契約書での成果保証の表現','コンサルティング業務の範囲明確化','クライアントへの説明資料の保管','業務日報・面談記録の整備'],ng:['「結果は保証しない」と書いても請求は来る','成功報酬型は特にリスクが高い','SNSでの発言・記事も対象になることがある'],next:['コンサルティング業務の範囲','クライアント業界・規模','標準契約書の内容','過去のクレーム・トラブル']},
+  scs2:{label:'講演・セミナー会場での参加者事故',talk:'「セミナー中に参加者がケガをしたり、会場機材を壊したりした時、主催者として責任を問われます。1日だけのイベント保険でも備えられます」と短期保険の存在も紹介。',types:['イベント賠償責任保険','施設賠償責任保険','講師向け賠償責任保険'],points:['会場との責任分担','参加者属性（高齢者・子供）でリスク評価','録画・録音の権利関係','機材レンタル品の管理'],ng:['会場保険だけでは主催者責任は不十分','オンライン開催も別補償が必要なケース','参加者の発言による炎上'],next:['年間セミナー回数・参加者数','会場の種類（自社／レンタル）','参加者属性','過去のヒヤリハット']},
+  scs3:{label:'SNS炎上・名誉毀損',talk:'「コンサル業はブランディングが命。SNS炎上で1件の案件を失うと連鎖的に影響します。風評被害対応の費用補償が増えています」と現代特有のリスクを訴えます。',types:['風評被害対応費用保険','名誉毀損賠償責任保険','弁護士費用特約','コンサルタント業務賠償保険'],points:['SNSアカウント運用ルール','炎上時の対応マニュアル','法的対応の窓口','記事削除・モニタリング費用'],ng:['自分の発言が炎上した場合は対象外のケース多数','契約クライアントへの誹謗中傷','レビュー削除の依頼費用'],next:['SNSアカウント数・運用方針','過去の炎上・トラブル','顧問弁護士の有無','風評対応会社との契約']},
+
+  // ── 個人事業主：職人 ──
+  scf1:{label:'作業中の転落・工具事故',talk:'「職人さんは体が資本。1度の事故で長期休業になると、月収どころか家族の生活まで影響します。一人親方の特別加入と上乗せ補償が王道です」と現実的に。',types:['一人親方の労災特別加入','傷害保険（職人特化）','所得補償保険','医療保険'],points:['労災特別加入の手続き','作業内容（高所・電気等）でリスク評価','長期療養への備え','後遺障害への対応'],ng:['通常の労災は個人事業主に適用されない','「請負だから自己責任」は法的に通らない場面増加','家族従事者の労災も別途必要'],next:['作業内容・使用工具','過去の事故・ヒヤリハット','家族構成・扶養家族','緊急予備資金']},
+  scf2:{label:'施工ミス・現場での物損',talk:'「現場でお客様の家具・床を傷つけた、配管ミスで水漏れ…という小さなトラブルから、補修費用が高額になることもあります」と日常的なリスクから入ります。',types:['請負業者賠償責任保険','建設工事保険','施設賠償責任保険'],points:['作業内容ごとのリスク評価','元請からの保険加入要求への対応','過去案件のテール期間','下請け・協力会社のミス対応'],ng:['「下請けのミス」とは言えない','契約書の免責条項では完全に守れない','工事保険は施工中のみで完成後は別契約'],next:['年間案件数・施工内容','元請業者の要求補償額','過去のクレーム','下請け・協力会社の管理体制']},
+  scf3:{label:'顧客宅の家財・近隣への損害',talk:'「お客様の家の家具・家電を傷つけたら、近隣の家に何か飛んでいったら…職人さんの仕事には必ず周辺リスクがあります」と作業外の影響も含めて訴求。',types:['請負業者賠償責任保険','個人賠償責任保険（仕事中対応）','施設賠償責任保険'],points:['作業範囲と影響範囲の整理','養生・保護の標準作業手順','近隣への事前説明体制','賠償限度額の設定（1事故・期間）'],ng:['「個人賠償責任保険」は仕事中は対象外が多い','「近隣への影響」は事前予測が難しい','契約書での免責条項の限界'],next:['作業内容・現場の特徴','近隣との距離・関係','養生・保護の現状','過去のクレーム事例']},
+};
+
 const AXES = [
   {key:'life',  label:'生命・人的\nリスク',    color:'#e05a5a'},
   {key:'asset', label:'財産・設備\nリスク',    color:'#e8892a'},
@@ -285,21 +820,70 @@ const results={
   s8:{label:'節税×保険の活用',talk:'「保険を節税ツールとして使う考え方がありますが、2019年以降のルール変更をご存知ですか？」',types:['小規模企業共済','iDeCo','個人年金保険（生命保険料控除）','経営セーフティ共済（倒産防止）'],points:['小規模企業共済・iDeCoは節税効果が高く老後資金にもなる','個人年金保険料控除（年間最大4万円の所得控除）も活用できる'],ng:['節税目的だけで保険に加入すると、保障のバランスが崩れる'],next:['現在の課税所得・税率の把握','既存の共済・iDeCoの加入状況']},
 };
 
-let currentAttr=null, selectedConcerns=[];
+let currentAttr=null, currentIndustry=null, selectedConcerns=[];
 
 function selectAttr(attr,el){
   document.querySelectorAll('.attr-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected'); currentAttr=attr;
+  currentIndustry=null; // 業種リセット
+  // 個人は業種選択スキップで直接STEP2へ
+  if(attr==='personal'){
+    setTimeout(()=>goStep(2),300);
+  } else {
+    setTimeout(()=>goStep(1.5),300);
+  }
+}
+
+function renderIndustries(){
+  const grid=document.getElementById('industryGrid'); grid.innerHTML='';
+  const list = INDUSTRIES[currentAttr] || [];
+  list.forEach(ind=>{
+    const d=document.createElement('div'); d.className='industry-card';
+    d.onclick=()=>selectIndustry(ind.id,d);
+    d.innerHTML=`<div class="industry-icon">${ind.icon}</div><div class="industry-text"><div class="industry-label">${ind.label}</div><div class="industry-sub">${ind.sub}</div></div>`;
+    grid.appendChild(d);
+  });
+}
+
+function selectIndustry(id,el){
+  document.querySelectorAll('.industry-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  currentIndustry = id;
   setTimeout(()=>goStep(2),300);
 }
+
+function skipIndustry(){
+  currentIndustry = null;
+  goStep(2);
+}
+
+function goBackFromStep2(){
+  // 個人選択時は属性へ戻る、それ以外は業種選択へ戻る
+  if(currentAttr === 'personal') goStep(1);
+  else goStep(1.5);
+}
+
 function renderConcerns(){
   const grid=document.getElementById('concernGrid'); grid.innerHTML=''; selectedConcerns=[];
+
+  // 業種特化の困りごとを先頭に追加（業種選択時のみ）
+  if(currentIndustry && INDUSTRY_CONCERNS[currentIndustry]){
+    INDUSTRY_CONCERNS[currentIndustry].forEach(c=>{
+      const d=document.createElement('div'); d.className='concern-card industry-tag';
+      d.onclick=()=>toggleConcern(c.id,d);
+      d.innerHTML=`<div class="concern-check" id="chk-${c.id}"></div><div class="concern-icon">${c.icon}</div><div class="concern-text">${c.text}</div><div class="concern-badge">業種特化</div>`;
+      grid.appendChild(d);
+    });
+  }
+
+  // 既存の困りごと（属性別）
   (concerns[currentAttr]||[]).forEach(c=>{
     const d=document.createElement('div'); d.className='concern-card';
     d.onclick=()=>toggleConcern(c.id,d);
     d.innerHTML=`<div class="concern-check" id="chk-${c.id}"></div><div class="concern-icon">${c.icon}</div><div class="concern-text">${c.text}</div>`;
     grid.appendChild(d);
   });
+
   document.getElementById('btnToResult').disabled=true;
 }
 function toggleConcern(id,el){
@@ -311,29 +895,79 @@ function toggleConcern(id,el){
 }
 function goStep(n){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('step'+n).classList.add('active');
-  [1,2,3].forEach(i=>{
-    const el=document.getElementById('step'+i+'Ind');
+  // n=1.5 のときは step15 を表示
+  const sectionId = n===1.5 ? 'step15' : 'step'+n;
+  document.getElementById(sectionId).classList.add('active');
+
+  // ステップバーの状態更新
+  // 表示上のステップ番号 1→1, 1.5→2, 2→3, 3→4
+  const stepMap = { 1:1, 1.5:2, 2:3, 3:4 };
+  const currentLevel = stepMap[n];
+
+  const indicators = [
+    {el:'step1Ind',  level:1},
+    {el:'step15Ind', level:2},
+    {el:'step2Ind',  level:3},
+    {el:'step3Ind',  level:4},
+  ];
+  indicators.forEach(it=>{
+    const el=document.getElementById(it.el);
     el.classList.remove('active','done');
-    if(i<n)el.classList.add('done'); if(i===n)el.classList.add('active');
+    if(it.level < currentLevel) el.classList.add('done');
+    if(it.level === currentLevel) el.classList.add('active');
   });
-  [1,2].forEach(i=>{
-    const l=document.getElementById('line'+i); l.classList.remove('done');
-    if(i<n)l.classList.add('done');
+
+  const lines = [
+    {el:'line1',  beforeLevel:1},
+    {el:'line15', beforeLevel:2},
+    {el:'line2',  beforeLevel:3},
+  ];
+  lines.forEach(li=>{
+    const l=document.getElementById(li.el); l.classList.remove('done');
+    if(li.beforeLevel < currentLevel) l.classList.add('done');
   });
-  if(n===2)renderConcerns();
+
+  if(n===1.5) renderIndustries();
+  if(n===2)   renderConcerns();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function showResult(){
+  // ── 利用上限チェック（4回目以降は購入モーダル）
+  if(!canUse()){
+    showUpgradeModal();
+    return;
+  }
+  // ── 利用回数を+1（STEP3進行時にカウント）
+  incrementUsage();
+
   goStep(3);
   const attrNames={corporate:'法人（中小企業）',personal:'個人',sole:'個人事業主'};
-  const selData=selectedConcerns.map(id=>concerns[currentAttr].find(c=>c.id===id)).filter(Boolean);
-  const tags=selData.map(c=>results[c.id]?.label||'').filter(Boolean);
+
+  // 業種特化＋既存の困りごとを両方から検索
+  const findConcern = (id)=>{
+    if(currentIndustry && INDUSTRY_CONCERNS[currentIndustry]){
+      const f = INDUSTRY_CONCERNS[currentIndustry].find(c=>c.id===id);
+      if(f) return f;
+    }
+    return (concerns[currentAttr]||[]).find(c=>c.id===id);
+  };
+  // 分析結果（業種特化を優先）
+  const findResult = (id)=> INDUSTRY_RESULTS[id] || results[id];
+
+  const selData=selectedConcerns.map(id=>findConcern(id)).filter(Boolean);
+  const tags=selData.map(c=>findResult(c.id)?.label||'').filter(Boolean);
+
+  // 業種ラベル
+  let industryLabel = '';
+  if(currentIndustry){
+    const ind = (INDUSTRIES[currentAttr]||[]).find(i=>i.id===currentIndustry);
+    if(ind) industryLabel = `｜${ind.icon} ${ind.label}`;
+  }
 
   document.getElementById('resultHeader').innerHTML=`
     <div class="result-header-label">リスク分析レポート</div>
-    <div class="result-header-title">【${attrNames[currentAttr]}】のお客様　${selectedConcerns.length}件のリスクを分析しました</div>
+    <div class="result-header-title">【${attrNames[currentAttr]}${industryLabel}】のお客様　${selectedConcerns.length}件のリスクを分析しました</div>
     <div class="result-tags">${tags.map(t=>`<span class="result-tag">${t}</span>`).join('')}</div>`;
 
   // 軸スコア集計
@@ -354,7 +988,7 @@ function showResult(){
   // 詳細サポート
   const container=document.getElementById('resultContent'); container.innerHTML='';
   selectedConcerns.forEach(id=>{
-    const r=results[id]; if(!r)return;
+    const r=findResult(id); if(!r)return;
     const make=(cls,title,items)=>{
       const d=document.createElement('div'); d.className='result-block '+cls;
       d.innerHTML=`<div class="result-block-title">${title}</div>${items.map(i=>`<div class="result-item"><span class="result-item-dot">›</span><span>${i}</span></div>`).join('')}`;
@@ -368,12 +1002,12 @@ function showResult(){
   });
 
   // コピーテキスト
-  let txt=`【保険みっけ リスク分析メモ】\n対象：${attrNames[currentAttr]}\n${'─'.repeat(28)}\n\n`;
+  let txt=`【保険みっけ リスク分析メモ】\n対象：${attrNames[currentAttr]}${industryLabel.replace('｜','｜業種：')}\n${'─'.repeat(28)}\n\n`;
   selectedConcerns.forEach(id=>{
-    const r=results[id]; if(!r)return;
+    const r=findResult(id); if(!r)return;
     txt+=`■ ${r.label}\n▶ トーク例\n${r.talk}\n\n▶ 関連保険\n${r.types.map(t=>'・'+t).join('\n')}\n\n▶ チェックポイント\n${r.points.map(p=>'・'+p).join('\n')}\n\n▶ NGポイント\n${r.ng.map(n=>'・'+n).join('\n')}\n\n▶ 次回確認事項\n${r.next.map(n=>'・'+n).join('\n')}\n\n${'─'.repeat(28)}\n\n`;
   });
-  txt+='Powered by 保険みっけ｜Smile Plus Consulting';
+  txt+='考えるをひとりにしない｜保険みっけ';
   document.getElementById('copyArea').textContent=txt;
 }
 
@@ -514,7 +1148,7 @@ function drawMatrix(selData){
   const pl=document.getElementById('priorityList'); pl.innerHTML='';
   const sorted=[...selData].sort((a,b)=>(b.urgency+b.impact)-(a.urgency+a.impact));
   sorted.forEach(c=>{
-    const r=results[c.id]; if(!r)return;
+    const r=results[c.id] || INDUSTRY_RESULTS[c.id]; if(!r)return;
     const score=c.urgency+c.impact;
     const pr=score>=1.7?'S':score>=1.3?'A':'B';
     const col=score>=1.7?'#e05a5a':score>=1.3?'#e8892a':'#2d7ad4';
