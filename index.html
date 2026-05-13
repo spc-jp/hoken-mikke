@@ -24,7 +24,9 @@
   .header::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(208,169,0,0.15);border-radius:50%;}
   .header::after{content:'';position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;background:rgba(208,169,0,0.1);border-radius:50%;}
   .header-badge{display:inline-block;background:var(--gold);color:var(--navy-dark);font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 12px;border-radius:20px;margin-bottom:10px;}
-  .header h1{font-family:'Noto Serif JP',serif;font-size:28px;color:var(--white);margin-bottom:6px;position:relative;z-index:1;}
+  .header h1{font-family:'Noto Serif JP',serif;font-size:28px;color:var(--white);margin-bottom:6px;position:relative;z-index:1;cursor:pointer;display:inline-block;transition:opacity .2s;user-select:none;}
+  .header h1:hover{opacity:.85;}
+  .header h1:active{opacity:.7;}
   .header h1 span{color:var(--gold);}
   .header p{font-size:12px;color:rgba(255,255,255,0.75);position:relative;z-index:1;}
 
@@ -212,7 +214,7 @@
 
 <div class="header">
   <div class="header-badge">士業・保険代理店向けツール</div>
-  <h1>保険<span>みっけ</span><span class="plan-badge" id="planBadge" style="display:none;"></span></h1>
+  <h1 onclick="resetToTop()" title="トップへ戻る">保険<span>みっけ</span><span class="plan-badge" id="planBadge" style="display:none;"></span></h1>
   <p>お客様の困りごとから、伝わる説明をみつける</p>
 </div>
 
@@ -861,6 +863,17 @@ function goBackFromStep2(){
   // 個人選択時は属性へ戻る、それ以外は業種選択へ戻る
   if(currentAttr === 'personal') goStep(1);
   else goStep(1.5);
+}
+
+// ヘッダーのタイトルクリックで初期画面に戻る（プラン状態は維持）
+function resetToTop(){
+  currentAttr = null;
+  currentIndustry = null;
+  selectedConcerns = [];
+  document.querySelectorAll('.attr-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.industry-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.concern-card').forEach(c=>c.classList.remove('selected'));
+  goStep(1);
 }
 
 function renderConcerns(){
