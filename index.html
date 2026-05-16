@@ -4,6 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>保険みっけ｜お客様の困りごとから、伝わる説明をみつける</title>
+
+<!-- ── 検索エンジン用 ── -->
+<meta name="description" content="「なんとなく不安」をレーダーチャートに🎯 14業種に対応した、保険代理店・士業向けのリスク分析サポートツールです。">
+
+<!-- ── OGP（Facebook・LINE等） ── -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://spc-jp.github.io/hoken-mikke/">
+<meta property="og:title" content="保険みっけ｜お客様の困りごとから、伝わる説明をみつける">
+<meta property="og:description" content="「なんとなく不安」をレーダーチャートに🎯 14業種に対応した、保険代理店・士業向けのリスク分析サポートツールです。">
+<meta property="og:image" content="https://spc-jp.github.io/hoken-mikke/ogp.png">
+<meta property="og:site_name" content="保険みっけ">
+<meta property="og:locale" content="ja_JP">
+
+<!-- ── Twitter Card（X） ── -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="保険みっけ｜お客様の困りごとから、伝わる説明をみつける">
+<meta name="twitter:description" content="「なんとなく不安」をレーダーチャートに🎯 14業種に対応した、保険代理店・士業向けのリスク分析サポートツールです。">
+<meta name="twitter:image" content="https://spc-jp.github.io/hoken-mikke/ogp.png">
+
+<!-- ── ファビコン ── -->
 <link rel="icon" type="image/png" href="https://spc-jp.github.io/hoken-mikke/favicon.png">
 <link rel="apple-touch-icon" href="https://spc-jp.github.io/hoken-mikke/favicon.png">
 <style>
@@ -313,37 +333,24 @@
     <div class="modal-icon">🔒</div>
     <h3>無料お試しが終了しました</h3>
     <p class="modal-sub" id="upgUsage">無料お試し 3 / 3 回</p>
-    <p class="modal-lead">引き続きご利用いただくには<br>下記のいずれかのプランをお選びください</p>
+    <p class="modal-lead">引き続きご利用いただくには<br>製品版のご購入をお願いします</p>
 
-    <!-- ライト版 -->
-    <div class="plan-card lite">
-      <div class="plan-head">
-        <div class="plan-name">📘 ライト版（買い切り）</div>
-        <div class="plan-price">980<span class="plan-unit">円</span></div>
-      </div>
-      <ul class="plan-features">
-        <li>✅ 100回まで分析OK</li>
-        <li>✅ 全機能フル利用</li>
-        <li>✅ トークメモのコピー</li>
-        <li>✅ レーダー＋優先度マトリクス</li>
-      </ul>
-      <button class="plan-btn lite" onclick="goToNote()">noteで購入する →</button>
-    </div>
-
-    <!-- Pro版 -->
+    <!-- 製品版（買い切り） -->
     <div class="plan-card pro">
       <div class="plan-head">
-        <div class="plan-name">👑 Pro版（月額）</div>
-        <div class="plan-price">1,980<span class="plan-unit">円/月</span></div>
+        <div class="plan-name">📘 製品版（買い切り）</div>
+        <div class="plan-price">9,800<span class="plan-unit">円</span></div>
       </div>
       <ul class="plan-features">
-        <li>✅ 無制限に分析OK</li>
+        <li>✅ 回数無制限で分析OK</li>
         <li>✅ 全機能フル利用</li>
-        <li>✅ PDFレポート出力（近日）</li>
-        <li>✅ 事務所名入りレポート（近日）</li>
-        <li>✅ 解約自由</li>
+        <li>✅ 14業種の業種特化トーク</li>
+        <li>✅ レーダー＋優先度マトリクス</li>
+        <li>✅ トークメモのコピー</li>
+        <li>✅ 一回払い・追加費用なし</li>
       </ul>
       <button class="plan-btn pro" onclick="goToStripe()">Stripeで購入する →</button>
+      <p style="font-size:10px;color:var(--gray-400);text-align:center;margin-top:8px;">ご購入後、メールでお送りするパスワードを入力してください</p>
     </div>
 
     <button class="btn-sub" onclick="openPwModal()">🔑 すでにご購入の方（パスワード入力）</button>
@@ -369,15 +376,13 @@
 // 🔧 設定（あとで差し替える項目）
 // ========================================
 const WORKER_URL = 'https://hoken-mikke.yymmatsu.workers.dev/';   // Cloudflare WorkerのPW検証API
-const STRIPE_URL = 'https://buy.stripe.com/eVqfZgdL4fvD3GD4oIcV20O'; // Pro版 月額1,980円のStripe Payment Link
-const NOTE_URL   = '【noteリンク】';      // ライト版 買い切り980円のnote販売URL（あとで差し替え）
+const STRIPE_URL = 'https://buy.stripe.com/dRmeVc36q97f4KHdZicV20Q'; // 製品版 買い切り9,800円のStripe Payment Link
 const FREE_LIMIT = 3;                    // 無料お試し回数
-const LITE_LIMIT = 100;                  // ライト版の利用上限
 
 // ========================================
 // 💾 状態管理（localStorage）
 // ========================================
-const LS_PLAN  = 'hoken_plan';   // 'free' | 'lite' | 'pro'
+const LS_PLAN  = 'hoken_plan';   // 'free' | 'paid'
 const LS_COUNT = 'hoken_count';  // 利用回数（累計）
 
 const S = {
@@ -392,9 +397,8 @@ function saveState(){
 
 // 上限チェック
 function getLimit(){
-  if(S.plan==='pro')  return Infinity;
-  if(S.plan==='lite') return LITE_LIMIT;
-  return FREE_LIMIT;
+  if(S.plan==='paid') return Infinity;  // 製品版は無制限
+  return FREE_LIMIT;                     // 無料は3回まで
 }
 function canUse(){ return S.count < getLimit(); }
 
@@ -411,28 +415,19 @@ function incrementUsage(){
 function updateBanner(){
   const banner = document.getElementById('usageBanner');
   const badge  = document.getElementById('planBadge');
-  const limit  = getLimit();
-  const remain = limit - S.count;
+  const remain = getLimit() - S.count;
 
   banner.classList.remove('banner-free','banner-lite','banner-pro','warn');
 
-  if(S.plan==='pro'){
+  if(S.plan==='paid'){
+    // 製品版（買い切り・無制限）
     banner.classList.add('banner-pro');
-    banner.innerHTML = '👑 Pro版でご利用中｜無制限';
+    banner.innerHTML = '👑 製品版でご利用中｜無制限';
     badge.style.display='inline-block';
     badge.className='plan-badge pro';
-    badge.textContent='Pro';
-  } else if(S.plan==='lite'){
-    banner.classList.add('banner-lite');
-    banner.innerHTML = `📘 ライト版でご利用中｜残り ${Math.max(0,remain)} / ${LITE_LIMIT} 回`;
-    badge.style.display='inline-block';
-    badge.className='plan-badge lite';
-    badge.textContent='Lite';
-    if(remain<=0){
-      banner.classList.add('warn');
-      banner.innerHTML = '⚠️ ライト版の利用回数が上限に達しました（タップ）';
-    }
+    badge.textContent='製品版';
   } else {
+    // 無料お試し
     banner.classList.add('banner-free');
     if(S.count===0){
       banner.innerHTML = `🎁 今なら${FREE_LIMIT}回まで無料でお試しいただけます`;
@@ -454,22 +449,11 @@ function handleBannerClick(){
 // 🛒 購入モーダル
 // ========================================
 function showUpgradeModal(){
-  const limit = getLimit();
-  const lbl = S.plan==='lite'
-    ? `ライト版 ${S.count} / ${LITE_LIMIT} 回（上限到達）`
-    : `無料お試し ${S.count} / ${FREE_LIMIT} 回`;
-  document.getElementById('upgUsage').textContent = lbl;
+  document.getElementById('upgUsage').textContent = `無料お試し ${Math.min(S.count,FREE_LIMIT)} / ${FREE_LIMIT} 回`;
   document.getElementById('upgradeModal').classList.add('show');
 }
 function closeUpgradeModal(){
   document.getElementById('upgradeModal').classList.remove('show');
-}
-function goToNote(){
-  if(NOTE_URL==='【noteリンク】'){
-    alert('⚠️ note販売ページのURLが未設定です。\nHTML内の NOTE_URL を実際のURLに差し替えてください。');
-    return;
-  }
-  window.open(NOTE_URL,'_blank');
 }
 function goToStripe(){
   if(STRIPE_URL==='【Stripeリンク】'){
@@ -519,12 +503,11 @@ async function checkPassword(){
     const data = await res.json();
 
     if(data.ok && data.plan){
-      // 認証成功
-      S.plan = data.plan;
+      // 認証成功（lite/pro どちらのPWでも製品版＝無制限として有効化）
+      S.plan = 'paid';
       S.count = 0;
       saveState();
-      const labelTxt = data.plan === 'pro' ? 'Pro版' : 'ライト版';
-      msg.textContent = `✅ ${labelTxt}が有効になりました`;
+      msg.textContent = '✅ 製品版が有効になりました';
       msg.className = 'pw-msg ok';
       setTimeout(()=>{
         closePwModal();
